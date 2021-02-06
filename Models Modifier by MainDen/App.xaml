@@ -1,0 +1,15 @@
+﻿<Application x:Class="Models_Modifier_by_MainDen.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Models_Modifier_by_MainDen"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!--MainColors-->
+        <SolidColorBrush x:Key="SelectBrushKey">#8944FA</SolidColorBrush>
+        <SolidColorBrush x:Key="HighlightBrushKey">#20103B</SolidColorBrush>
+        <SolidColorBrush x:Key="BackgroundBrushKey">#140A24</SolidColorBrush>
+        <SolidColorBrush x:Key="SystemBrushKey">#2E1754</SolidColorBrush>
+        <SolidColorBrush x:Key="TextBrushKey">#FFFFFF</SolidColorBrush>
+        <SolidColorBrush x:Key="BorderBrushKey">#000000</SolidColorBrush>
+    </Application.Resources>
+</Application>
