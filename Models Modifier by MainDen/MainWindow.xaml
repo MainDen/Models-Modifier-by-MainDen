@@ -7,11 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         WindowStyle="None"
-        MinWidth="400"
-        MinHeight="74">
+        MinWidth="400" MinHeight="74">
     <Window.Resources>
     </Window.Resources>
-    <Grid Background="{DynamicResource BackgroundBrushKey}">
+    <Window.CommandBindings>
+    </Window.CommandBindings>
+    <Grid Style="{StaticResource {x:Type Panel}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition />
@@ -24,17 +25,17 @@
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="40" />
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Grid.Column="0" Background="{DynamicResource HighlightBrushKey}">
-                <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Content="File" />
-                <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Content="Edit" />
-                <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Content="Run" />
-                <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Content="Settings" />
-                <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Content="Extentions" />
-                <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Content="Help" />
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Style="{DynamicResource HighlightPanel}">
+                <Button Content="File" />
+                <Button Content="Edit" />
+                <Button Content="Run" />
+                <Button Content="Settings" />
+                <Button Content="Extentions" />
+                <Button Content="Help" />
             </StackPanel>
-            <Button x:Name="buttonMinimize" Grid.Column="1" Background="{DynamicResource SystemBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" Content="_" />
-            <Button Grid.Column="2" Background="{DynamicResource SystemBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" Content="Ll" />
-            <Button x:Name="buttonClose" Grid.Column="3" Background="{DynamicResource SystemBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" Content="X" />
+            <Button x:Name="buttonMinimize" Grid.Column="1" Style="{DynamicResource SystemButton}" Content="M 0 0 L 0 2 L 10 2 L 10 0 Z" />
+            <Button x:Name="buttonMaximize" Grid.Column="2" Style="{DynamicResource SystemButton}" Content="M 0 0 L 0 10 L 10 10 L 10 0 L 2 0 L 2 2 L 8 2 L 8 8 L 2 8 L 2 0 Z" />
+            <Button x:Name="buttonClose" Grid.Column="3" Style="{DynamicResource SystemButton}" Command="Close" Content="M 0 1 L 1 0 L 5 4 L 9 0 L 10 1 L 6 5 L 10 9 L 9 10 L 5 6 L 1 10 L 0 9 L 4 5 Z" />
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -52,16 +53,22 @@
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0">
                     <StackPanel>
-
+                        <Button Style="{DynamicResource ModifierButon}" Content="Color" />
+                        <Button Style="{DynamicResource ModifierButon}" Content="Quality" />
+                        <Button Style="{DynamicResource ModifierButon}" Content="Mask" />
+                        <Button Style="{DynamicResource ModifierButon}" Content="Shape" />
+                        <Button Style="{DynamicResource ModifierButon}" Content="Flip" />
+                        <Button Style="{DynamicResource ModifierButon}" Content="Rotate" />
+                        <Button Style="{DynamicResource ModifierButon}" Content="Scale" />
                     </StackPanel>
                 </ScrollViewer>
-                <GridSplitter Grid.Row="1" Height="3" Background="{DynamicResource BorderBrushKey}" ShowsPreview="False" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                <GridSplitter Grid.Row="1" Style="{DynamicResource HorizontalGridSplitter}" />
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Height="30" Margin="10" Content="Apply" />
+                    <Button Height="30" Margin="10" Content="Apply" />
                     <ScrollViewer Grid.Row="1">
                         <StackPanel>
 
@@ -69,8 +76,8 @@
                     </ScrollViewer>
                 </Grid>
             </Grid>
-            <GridSplitter Grid.Column="1" Width="3" Background="{DynamicResource BorderBrushKey}" ShowsPreview="False" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
-            <GridSplitter Grid.Column="3" Width="3" Background="{DynamicResource BorderBrushKey}" ShowsPreview="False" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+            <GridSplitter Grid.Column="1" Style="{DynamicResource VerticalGridSplitter}" />
+            <GridSplitter Grid.Column="3" Style="{DynamicResource VerticalGridSplitter}" />
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="2*"/>
@@ -82,13 +89,13 @@
 
                     </StackPanel>
                 </ScrollViewer>
-                <GridSplitter Grid.Row="1" Height="3" Background="{DynamicResource BorderBrushKey}" ShowsPreview="False" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                <GridSplitter Grid.Row="1" Style="{DynamicResource HorizontalGridSplitter}" />
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Button Background="{DynamicResource HighlightBrushKey}" Foreground="{DynamicResource TextBrushKey}" BorderThickness="0" FontSize="12" Padding="10,0" Height="30" Margin="10" Content="Update" />
+                    <Button Height="30" Margin="10" Content="Update" />
                     <ScrollViewer Grid.Row="1">
                         <StackPanel>
 
@@ -97,10 +104,10 @@
                 </Grid>
             </Grid>
         </Grid>
-        <UniformGrid Columns="3" Grid.Row="2" Background="{DynamicResource HighlightBrushKey}">
-            <TextBlock Grid.Column="0" Foreground="{DynamicResource TextBrushKey}" FontSize="12" Padding="10,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Execution time: 0.03301s" />
-            <TextBlock Grid.Column="1" Foreground="{DynamicResource TextBrushKey}" FontSize="12" Padding="10,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Status: Complete" />
-            <TextBlock Grid.Column="1" Foreground="{DynamicResource TextBrushKey}" FontSize="12" Padding="10,0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="File: D:\Model.xml" />
+        <UniformGrid Grid.Row="2" Columns="3" Style="{DynamicResource HighlightPanel}">
+            <TextBlock Grid.Column="0" Style="{DynamicResource NotifyPanel}" Text="Execution time: 0.03301s" />
+            <TextBlock Grid.Column="1" Style="{DynamicResource NotifyPanel}" Text="Status: Complete" />
+            <TextBlock Grid.Column="2" Style="{DynamicResource NotifyPanel}" Text="File: D:\Model.xml" />
         </UniformGrid>
     </Grid>
 </Window>
