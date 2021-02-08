@@ -1,7 +1,4 @@
-﻿using Core_by_MainDen.Models;
-using Core_by_MainDen.Modifiers;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Models_Modifier_by_MainDen.ViewModels

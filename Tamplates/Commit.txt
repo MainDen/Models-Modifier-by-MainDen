@@ -1,0 +1,10 @@
+Title
+
+Refactoring:
+File.ext:
+
+Bugfix:
+File.ext:
+
+New:
+File.ext:
