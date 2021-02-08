@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models_Modifier_by_MainDen.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ namespace Models_Modifier_by_MainDen
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowViewModel(this);
         }
     }
 }
