@@ -4,9 +4,11 @@ using System.Drawing;
 
 namespace Core_by_MainDen.Modifiers
 {
-    public class FillEllipceModifier : AbstractModifier
+    public class FillEllipseModifier : AbstractModifier
     {
         private static readonly string argsInfo = "";
+
+        public override string Name => "Fill Ellipce";
 
         public override AbstractModel ApplyTo(AbstractModel model, params object[] args)
         {

@@ -7,12 +7,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         WindowStyle="None"
+        AllowsTransparency="True"
         MinWidth="400" MinHeight="74">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="7" NonClientFrameEdges="None" />
+    </WindowChrome.WindowChrome>
     <Window.Resources>
     </Window.Resources>
     <Window.CommandBindings>
     </Window.CommandBindings>
-    <Grid Style="{StaticResource {x:Type Panel}}">
+    <Grid Margin="7" Style="{StaticResource {x:Type Panel}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition />
@@ -25,13 +29,20 @@
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="40" />
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Style="{DynamicResource HighlightPanel}">
-                <Button Content="File" />
-                <Button Content="Edit" />
-                <Button Content="Run" />
-                <Button Content="Settings" />
-                <Button Content="Extentions" />
-                <Button Content="Help" />
+            <StackPanel MouseLeftButtonDown="OnDragMove" Grid.Column="0" Orientation="Horizontal" Style="{DynamicResource HighlightPanel}">
+                <Menu>
+                    <MenuItem Header="File">
+                        <MenuItem Header="New" />
+                        <MenuItem Header="Open" />
+                        <MenuItem Header="Save" />
+                        <MenuItem Header="Close" Command="{Binding CloseCommand}" />
+                    </MenuItem>
+                    <MenuItem Header="Edit" />
+                    <MenuItem Header="Run" />
+                    <MenuItem Header="Settings" />
+                    <MenuItem Header="Extentions" />
+                    <MenuItem Header="Help" />
+                </Menu>
             </StackPanel>
             <Button Grid.Column="1" Style="{DynamicResource SystemButton}" Command="{Binding MinimizeCommand}" Content="M 0 0 L 0 2 L 10 2 L 10 0 Z" />
             <Button Grid.Column="2" Style="{DynamicResource SystemButton}" Command="{Binding MaximizeCommand}" Content="{Binding MaximizeSvgContent}" />

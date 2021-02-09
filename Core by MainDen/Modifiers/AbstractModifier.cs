@@ -9,5 +9,7 @@ namespace Core_by_MainDen.Modifiers
         public abstract bool CanBeAppliedTo(AbstractModel model);
 
         public abstract string GetArgsInfo(AbstractModel model);
+
+        public abstract string Name { get; }
     }
 }

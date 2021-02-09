@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Models_Modifier_by_MainDen.Commands
 {
-    public class BaseCommand : ICommand
+    public class RelayCommand : ICommand
     {
         private Action<object> execute;
         private Func<object, bool> canExecute;
@@ -14,7 +14,7 @@ namespace Models_Modifier_by_MainDen.Commands
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public BaseCommand(Action<object> execute, Func<object, bool> canExecute = null)
+        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
         {
             this.execute = execute;
             this.canExecute = canExecute;
