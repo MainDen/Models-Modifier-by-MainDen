@@ -8,6 +8,8 @@ namespace Core_by_MainDen.Modifiers
     {
         private static readonly string argsInfo = "int|X;int|Y;int(0,MAX)|Width;int(0,MAX)|Height";
 
+        public override string Name => "Shift Rectangle Through Tile";
+
         public override AbstractModel ApplyTo(AbstractModel model, params object[] args)
         {
             if (model is null)

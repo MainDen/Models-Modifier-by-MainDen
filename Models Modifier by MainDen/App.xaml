@@ -5,7 +5,8 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <!--MainColors-->
-        <SolidColorBrush x:Key="SelectBrushKey">#8944FA</SolidColorBrush>
+        <SolidColorBrush x:Key="SelectedBrushKey">#8944FA</SolidColorBrush>
+        <SolidColorBrush x:Key="PressedBrushKey">#4904BA</SolidColorBrush>
         <SolidColorBrush x:Key="HighlightBrushKey">#20103B</SolidColorBrush>
         <SolidColorBrush x:Key="BackgroundBrushKey">#140A24</SolidColorBrush>
         <SolidColorBrush x:Key="SystemBrushKey">#2E1754</SolidColorBrush>
@@ -25,6 +26,23 @@
             <Setter Property="Background" Value="{DynamicResource HighlightBrushKey}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource SelectedBrushKey}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource PressedBrushKey}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style TargetType="Panel">
             <Setter Property="Background" Value="{DynamicResource BackgroundBrushKey}" />
@@ -77,23 +95,16 @@
         </Style>
         <Style x:Key="ScrollBarLineButton"
                TargetType="{x:Type RepeatButton}">
+            <Setter Property="Background" Value="{DynamicResource SystemBrushKey}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type RepeatButton}">
-                        <Border x:Name="Border" Background="{DynamicResource SystemBrushKey}">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}">
                             <Path x:Name="Arrow"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center"
                                   Data="{Binding Content, 
                                   RelativeSource={RelativeSource TemplatedParent}}">
-                                <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal" />
-                                        <VisualState x:Name="MouseOver" />
-                                        <VisualState x:Name="Pressed" />
-                                        <VisualState x:Name="Disabled" />
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>
                                 <Path.Fill>
                                     <SolidColorBrush Color="White"/>
                                 </Path.Fill>
@@ -102,6 +113,14 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource SelectedBrushKey}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource PressedBrushKey}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style x:Key="ScrollBarPageButton"
                TargetType="{x:Type RepeatButton}">
@@ -115,13 +134,22 @@
         </Style>
         <Style x:Key="ScrollBarThumb"
                TargetType="{x:Type Thumb}">
+            <Setter Property="Background" Value="{DynamicResource SystemBrushKey}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Thumb}">
-                        <Border Background="{DynamicResource SystemBrushKey}" />
+                        <Border Background="{TemplateBinding Background}" />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="{DynamicResource SelectedBrushKey}" />
+                </Trigger>
+                <Trigger Property="IsDragging" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource PressedBrushKey}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <ControlTemplate x:Key="VerticalScrollBar"
                  TargetType="{x:Type ScrollBar}">
@@ -224,6 +252,17 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+        <Style TargetType="Menu">
+            <Setter Property="Background" Value="{DynamicResource HighlightBrushKey}" />
+            <Setter Property="Margin" Value="7" />
+        </Style>
+        <Style TargetType="MenuItem">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="ContextMenu">
+            <Setter Property="Background" Value="{DynamicResource HighlightBrushKey}" />
+        </Style>
         <!--NamedStyles-->
         <Style x:Key="NotifyPanel"
                TargetType="TextBlock"
@@ -238,28 +277,38 @@
         <Style x:Key="SystemButton"
                TargetType="Button"
                BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{DynamicResource SystemBrushKey}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{DynamicResource SystemBrushKey}" Padding="0">
+                        <Border Background="{TemplateBinding Background}" Padding="0">
                             <Path
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center"
                               Data="{Binding Content, 
                               RelativeSource={RelativeSource TemplatedParent}}">
                                 <Path.Fill>
-                                    <SolidColorBrush Color="White"/>
+                                    <SolidColorBrush Color="White" />
                                 </Path.Fill>
                             </Path>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource SelectedBrushKey}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource PressedBrushKey}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style x:Key="ModifierButon"
                TargetType="{x:Type Button}"
                BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Padding" Value="5, 5" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
     </Application.Resources>
 </Application>

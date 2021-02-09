@@ -12,39 +12,39 @@ namespace Models_Modifier_by_MainDen.ViewModels
             Window = window;
         }
 
-        private BaseCommand closeComand;
-        public BaseCommand CloseCommand
+        private RelayCommand closeComand;
+        public RelayCommand CloseCommand
         {
             get
             {
                 return closeComand ??
-                    (closeComand = new BaseCommand(obj =>
+                    (closeComand = new RelayCommand(obj =>
                     {
                         Window.Close();
                     }));
             }
         }
 
-        private BaseCommand minimizeCommand;
-        public BaseCommand MinimizeCommand
+        private RelayCommand minimizeCommand;
+        public RelayCommand MinimizeCommand
         {
             get
             {
                 return minimizeCommand ??
-                    (minimizeCommand = new BaseCommand(obj =>
+                    (minimizeCommand = new RelayCommand(obj =>
                     {
                         Window.WindowState = WindowState.Minimized;
                     }));
             }
         }
 
-        private BaseCommand maximizeCommand;
-        public BaseCommand MaximizeCommand
+        private RelayCommand maximizeCommand;
+        public RelayCommand MaximizeCommand
         {
             get
             {
                 return maximizeCommand ??
-                    (maximizeCommand = new BaseCommand(obj =>
+                    (maximizeCommand = new RelayCommand(obj =>
                     {
                         switch (Window.WindowState)
                         {

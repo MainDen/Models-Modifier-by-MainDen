@@ -8,6 +8,8 @@ namespace Core_by_MainDen.Modifiers
     {
         private static readonly string argsInfo = "float(0,1] | Quality";
 
+        public override string Name => "Decrease Quality";
+
         public override AbstractModel ApplyTo(AbstractModel model, params object[] args)
         {
             if (model is null)
