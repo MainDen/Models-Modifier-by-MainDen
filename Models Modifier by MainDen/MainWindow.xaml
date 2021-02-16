@@ -50,11 +50,11 @@
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="7*"/>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
@@ -62,24 +62,23 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
-                <ScrollViewer Grid.Row="0">
-                    <StackPanel x:Name="ModifiersPanel">
-                        <Button Style="{DynamicResource ModifierButon}" Content="Color" />
-                        <Button Style="{DynamicResource ModifierButon}" Content="Quality" />
-                        <Button Style="{DynamicResource ModifierButon}" Content="Mask" />
-                        <Button Style="{DynamicResource ModifierButon}" Content="Shape" />
-                        <Button Style="{DynamicResource ModifierButon}" Content="Flip" />
-                        <Button Style="{DynamicResource ModifierButon}" Content="Rotate" />
-                        <Button Style="{DynamicResource ModifierButon}" Content="Scale" />
-                    </StackPanel>
-                </ScrollViewer>
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                    <ScrollViewer Grid.Row="2">
+                        <ListView ItemsSource="{Binding Modifiers}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedModifier}" />
+                    </ScrollViewer>
+                </Grid>
                 <GridSplitter Grid.Row="1" Style="{DynamicResource HorizontalGridSplitter}" />
                 <Grid Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Button Height="30" Margin="10" Content="Apply" />
+                    <Button Height="30" Margin="10" Content="Apply" Command="{Binding ApplyCommand}" />
                     <ScrollViewer Grid.Row="1">
                         <StackPanel>
 
@@ -96,9 +95,7 @@
                     <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0">
-                    <StackPanel>
-
-                    </StackPanel>
+                    <ListView ItemsSource="{Binding AppliedModifiers}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedAppliedModifier}" />
                 </ScrollViewer>
                 <GridSplitter Grid.Row="1" Style="{DynamicResource HorizontalGridSplitter}" />
                 <Grid Grid.Row="2">

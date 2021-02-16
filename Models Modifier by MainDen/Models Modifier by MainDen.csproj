@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core by MainDen\Core by MainDen.csproj" />
+    <ProjectReference Include="..\Modifiers by MainDen\Modifiers by MainDen.csproj" />
   </ItemGroup>
 
 </Project>
