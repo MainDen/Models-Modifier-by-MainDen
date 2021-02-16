@@ -1,10 +1,9 @@
 Title
 
-Refactoring:
-File.ext:
-
 Bugfix:
-File.ext:
+
+Changes:
 
 New:
-File.ext:
+
+Refactoring:

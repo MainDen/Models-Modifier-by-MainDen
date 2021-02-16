@@ -1,53 +1,52 @@
-﻿using Core_by_MainDen.Models;
-using System;
+﻿using System;
 using System.Drawing;
 
-namespace Core_by_MainDen.Modifiers
+namespace Modifiers_by_MainDen.Modifiers
 {
-    public class FillEllipseModifier : AbstractModifier
+    public class FillIntoEllipseModifier : AbstractModifier
     {
         private static readonly string argsInfo = "";
 
-        public override string Name => "Fill Ellipce";
+        public override string Name => "Fill into Ellipce";
 
-        public override AbstractModel ApplyTo(AbstractModel model, params object[] args)
+        public override object ApplyTo(object model, params object[] args)
         {
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
-            if (!(model is BitmapModel source))
-                throw new ArgumentException("Expected BitmapModel.");
+            if (!(model is Bitmap source))
+                throw new ArgumentException("Expected Bitmap.");
+            if (source.Width == 0 || source.Height == 0)
+                throw new ArgumentException("Invalid model.");
 
-            using (model.Access.GetAccess())
-            {
-                Bitmap sourceBitmap = source.Bitmap;
-                if (sourceBitmap is null || sourceBitmap.Width == 0 || sourceBitmap.Height == 0)
-                    throw new ArgumentException("Invalid model.");
-
-                Bitmap result = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
-                double a = result.Width / 2.0;
-                double b = result.Height / 2.0;
-                EllipseMath math = new EllipseMath(a, b, a, b);
-                for (int i = 0; i < result.Height; i++)
-                    for (int j = 0; j < result.Width; j++)
-                    {
-                        math.SetLocalXInEllipse(j);
-                        math.SetLocalYInEllipse(i);
-                        if (math.ContainsIn())
-                            result.SetPixel(j, i, sourceBitmap.GetPixel(
-                                Math.Max(0, Math.Min(result.Width - 1, j)),
-                                Math.Max(0, Math.Min(result.Height - 1, (int)math.GetYInBorder()))
-                                ));
-                    }
-                return new BitmapModel(result);
-            }
+            Bitmap result = new Bitmap(source.Width, source.Height);
+            double a = result.Width / 2.0;
+            double b = result.Height / 2.0;
+            EllipseMath math = new EllipseMath(a, b, a, b);
+            for (int i = 0; i < result.Height; i++)
+                for (int j = 0; j < result.Width; j++)
+                {
+                    math.SetLocalXInEllipse(j);
+                    math.SetLocalYInEllipse(i);
+                    if (math.ContainsIn())
+                        result.SetPixel(j, i, source.GetPixel(
+                            Math.Max(0, Math.Min(result.Width - 1, j)),
+                            Math.Max(0, Math.Min(result.Height - 1, (int)math.GetYInBorder()))
+                            ));
+                }
+            return result;
         }
 
-        public override bool CanBeAppliedTo(AbstractModel model)
+        public override bool CanBeAppliedTo(Type modelType)
         {
-            return !(model as BitmapModel is null);
+            return modelType == typeof(Bitmap);
         }
 
-        public override string GetArgsInfo(AbstractModel model)
+        public override Type ResultType(Type modelType)
+        {
+            return typeof(Bitmap);
+        }
+
+        public override string GetArgsInfo(object model)
         {
             return argsInfo;
         }
