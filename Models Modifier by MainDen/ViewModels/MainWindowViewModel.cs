@@ -1,10 +1,14 @@
 ﻿using Models_Modifier_by_MainDen.Commands;
+using Models_Modifier_by_MainDen.Models;
 using Modifiers_by_MainDen.Modifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Media.Imaging;
 
 namespace Models_Modifier_by_MainDen.ViewModels
 {
@@ -15,10 +19,15 @@ namespace Models_Modifier_by_MainDen.ViewModels
             InitializeModifiers();
         }
 
-        public MainWindowViewModel(System.Windows.Window window) : base(window)
+        public MainWindowViewModel(MainWindow window) : base(window)
         {
+            MainWindow = window;
+            Arg = new ArgModel(MainWindow.properties);
             InitializeAppliedModifiers();
         }
+
+        private MainWindow MainWindow { get; set; }
+        private ArgModel Arg { get; set; }
 
         private string filePath;
         public string FilePath
@@ -61,7 +70,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 Type type = ResultType;
                 foreach (var modifier in modifiers)
                     if (modifier.CanBeAppliedTo(type) && IsMatchesTheSearchQuery(SearchText, modifier.Name))
-                        visibleModifiers.Add(modifier);
+                        visibleModifiers.Add(modifier.Modifier);
                 return visibleModifiers;
             }
         }
@@ -75,6 +84,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             set
             {
                 selectedModifier = value;
+                Arg.ResetPanelWithTemplate(selectedModifier);
                 OnPropertyChanged(nameof(SelectedModifier));
             }
         }
@@ -117,7 +127,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             set
             {
                 searchText = value;
-                OnPropertyChanged(nameof(SearchText));
+                OnPropertyChanged();
                 OnPropertyChanged(nameof(Modifiers));
             }
         }
@@ -140,7 +150,43 @@ namespace Models_Modifier_by_MainDen.ViewModels
                     ++qi;
             return qi == qLength;
         }
-        
+
+        private Bitmap resultBitmap = null;
+        private Bitmap ResultBitmap
+        {
+            get => resultBitmap;
+            set
+            {
+                resultBitmap = value;
+                OnPropertyChanged(nameof(ResultImage));
+            }
+        }
+        public BitmapImage ResultImage
+        {
+            get
+            {
+                return BitmapToImageSource(ResultBitmap);
+            }
+        }
+
+        private BitmapImage BitmapToImageSource(Bitmap bitmap)
+        {
+            if (bitmap is null)
+                return null;
+            using (MemoryStream memory = new MemoryStream())
+            {
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                memory.Position = 0;
+                BitmapImage bitmapimage = new BitmapImage();
+                bitmapimage.BeginInit();
+                bitmapimage.StreamSource = memory;
+                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapimage.EndInit();
+
+                return bitmapimage;
+            }
+        }
+
         private RelayCommand applyCommand;
         public RelayCommand ApplyCommand
         {
@@ -151,10 +197,11 @@ namespace Models_Modifier_by_MainDen.ViewModels
                     {
                         if (selectedModifier != null)
                         {
-                            AppliedModifiers.Add(SelectedModifier);
+                            AppliedModifiers.Add(SelectedModifier.Modifier);
                             SelectedModifier = null;
                             SearchText = "";
                             OnPropertyChanged(nameof(Modifiers));
+                            ResultBitmap = null;
                         }
                     }));
             }

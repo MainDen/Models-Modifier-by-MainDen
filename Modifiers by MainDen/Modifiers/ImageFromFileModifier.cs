@@ -5,23 +5,32 @@ namespace Modifiers_by_MainDen.Modifiers
 {
     public class ImageFromFileModifier : AbstractModifier
     {
-        private static readonly string argsInfo = "string | Path";
+        private static string name = "Image from File";
+        private static string[] argNames = new string[] { "Path" };
+        private static string[] argHints = new string[] { "filepath" };
+        private static string[] argDefaults = new string[] { "" };
 
-        public override string Name => "Image from File";
+        public override string Name => name;
+        public override string[] ArgNames => argNames;
+        public override string[] ArgHints => argHints;
+        public override string[] ArgDefaults => argDefaults;
 
-        public override object ApplyTo(object model, params object[] args)
+        public override object ApplyTo(object model)
         {
-            if (args.Length != 1 || args[0] as string is null)
-                throw new ArgumentException("Invalid args.");
-            
-            string path = (string)args[0];
+            if (!(model is null))
+                throw new ArgumentException("Unexpected model.");
+
+            if (ContainsNullArgStates())
+                throw new Exception("Invalid args.", new MethodAccessException("ArgStates is not initialized."));
+
+            string path = ArgStates[0];
             try
             {
                 return (Bitmap)Image.FromFile(path);
             }
-            catch
+            catch (Exception e)
             {
-                throw new ArgumentException("Invalid args.");
+                throw new Exception("Invalid args.", e);
             }
         }
 
@@ -33,11 +42,6 @@ namespace Modifiers_by_MainDen.Modifiers
         public override Type ResultType(Type modelType)
         {
             return typeof(Bitmap);
-        }
-
-        public override string GetArgsInfo(object model)
-        {
-            return argsInfo;
         }
     }
 }
