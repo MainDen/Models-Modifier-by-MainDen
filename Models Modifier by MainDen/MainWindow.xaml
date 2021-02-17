@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:Models_Modifier_by_MainDen"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
-        WindowStyle="None"
-        AllowsTransparency="True"
+        WindowStyle="SingleBorderWindow"
         MinWidth="400" MinHeight="74">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="7" NonClientFrameEdges="None" />
@@ -80,13 +79,12 @@
                     </Grid.RowDefinitions>
                     <Button Height="30" Margin="10" Content="Apply" Command="{Binding ApplyCommand}" />
                     <ScrollViewer Grid.Row="1">
-                        <StackPanel>
-
-                        </StackPanel>
+                        <StackPanel x:Name="properties" />
                     </ScrollViewer>
                 </Grid>
             </Grid>
             <GridSplitter Grid.Column="1" Style="{DynamicResource VerticalGridSplitter}" />
+            <Image Grid.Column="2"  Source="{Binding ResultImage}" />
             <GridSplitter Grid.Column="3" Style="{DynamicResource VerticalGridSplitter}" />
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>

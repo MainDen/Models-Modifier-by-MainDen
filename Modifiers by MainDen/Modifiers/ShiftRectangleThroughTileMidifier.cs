@@ -5,31 +5,43 @@ namespace Modifiers_by_MainDen.Modifiers
 {
     public class ShiftRectangleThroughTileModifier : AbstractModifier
     {
-        private static readonly string argsInfo = "int|X;int|Y;int(0,MAX)|Width;int(0,MAX)|Height";
+        private static string name = "Shift Rectangle through Tile";
+        private static string[] argNames = new string[] { "X", "Y", "Width", "Height" };
+        private static string[] argHints = new string[] { "int", "int", "int|min=0", "int|min=0" };
+        private static string[] argDefaults = new string[] { "0", "0", "100", "100" };
 
-        public override string Name => "Shift Rectangle through Tile";
+        public override string Name => name;
+        public override string[] ArgNames => argNames;
+        public override string[] ArgHints => argHints;
+        public override string[] ArgDefaults => argDefaults;
 
-        public override object ApplyTo(object model, params object[] args)
+        public override object ApplyTo(object model)
         {
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
             if (!(model is Bitmap source))
-                throw new ArgumentException("Expected Bitmap.");
+                throw new ArgumentException("Unexpected model.");
             if (source.Width == 0 || source.Height == 0)
                 throw new ArgumentException("Invalid model.");
 
-            if (args.Length != 4 ||
-                args[0] as int? is null ||
-                args[1] as int? is null ||
-                args[2] as int? is null ||
-                args[3] as int? is null)
-                throw new ArgumentException("Invalid args.");
-            int x = (((int)args[0] % source.Width) + source.Width) % source.Width;
-            int y = (((int)args[1] % source.Height) + source.Height) % source.Height;
-            int width = (int)args[2];
-            int height = (int)args[3];
+            if (ContainsNullArgStates())
+                throw new Exception("Invalid args.", new MethodAccessException("ArgStates is not initialized."));
+
+            int x, y, width, height;
+            try
+            {
+                string[] states = ArgStates;
+                x = ((int.Parse(states[0]) % source.Width) + source.Width) % source.Width;
+                y = ((int.Parse(states[1]) % source.Height) + source.Height) % source.Height;
+                width = int.Parse(states[2]);
+                height = int.Parse(states[3]);
+            }
+            catch
+            {
+                throw new Exception("Invalid args.");
+            }
             if (width <= 0 || height <= 0)
-                throw new ArgumentException("Invalid args.");
+                throw new Exception("Invalid args.");
 
             Bitmap result = new Bitmap(width, height);
             using (Graphics g = Graphics.FromImage(result))
@@ -47,11 +59,6 @@ namespace Modifiers_by_MainDen.Modifiers
         public override Type ResultType(Type modelType)
         {
             return typeof(Bitmap);
-        }
-
-        public override string GetArgsInfo(object model)
-        {
-            return argsInfo;
         }
     }
 }

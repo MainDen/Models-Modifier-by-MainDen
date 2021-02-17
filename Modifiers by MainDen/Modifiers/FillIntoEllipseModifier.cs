@@ -5,16 +5,16 @@ namespace Modifiers_by_MainDen.Modifiers
 {
     public class FillIntoEllipseModifier : AbstractModifier
     {
-        private static readonly string argsInfo = "";
+        private static string name = "Fill into Ellipce";
 
-        public override string Name => "Fill into Ellipce";
+        public override string Name => name;
 
-        public override object ApplyTo(object model, params object[] args)
+        public override object ApplyTo(object model)
         {
             if (model is null)
                 throw new ArgumentNullException(nameof(model));
             if (!(model is Bitmap source))
-                throw new ArgumentException("Expected Bitmap.");
+                throw new ArgumentException("Unexpected model.");
             if (source.Width == 0 || source.Height == 0)
                 throw new ArgumentException("Invalid model.");
 
@@ -44,11 +44,6 @@ namespace Modifiers_by_MainDen.Modifiers
         public override Type ResultType(Type modelType)
         {
             return typeof(Bitmap);
-        }
-
-        public override string GetArgsInfo(object model)
-        {
-            return argsInfo;
         }
 
         private class EllipseMath
