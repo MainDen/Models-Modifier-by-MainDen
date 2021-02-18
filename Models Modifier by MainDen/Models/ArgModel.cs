@@ -15,7 +15,7 @@ namespace Models_Modifier_by_MainDen.Models
             Panel = panel;
         }
 
-        private Grid GetArgView(string name, string hint, string state)
+        private Grid GetArgView(int i, string name, string hint, string state, string[] states)
         {
             ToolTip ttHint = new ToolTip();
             ttHint.Content = hint;
@@ -36,11 +36,16 @@ namespace Models_Modifier_by_MainDen.Models
             Grid.SetColumn(tbState, 1);
             tbState.ToolTip = ttHint;
             tbState.TextAlignment = TextAlignment.Left;
+            tbState.TextChanged += (sender, e) =>
+            {
+                TextBox tb = (TextBox)sender;
+                states[i] = tb.Text;
+            };
             result.Children.Add(tbState);
 
             return result;
         }
-        
+
         private bool ContainsNull(string[] strArray)
         {
             if (strArray is null)
@@ -80,7 +85,7 @@ namespace Models_Modifier_by_MainDen.Models
             if (len != nlen)
                 throw new MethodAccessException("ArgStates is not initialized.");
             for (int i = 0; i < len; ++i)
-                Panel.Children.Add(GetArgView(names[i], hints[i], states[i]));
+                Panel.Children.Add(GetArgView(i, names[i], hints[i], states[i], states));
         }
     }
 }
