@@ -7,7 +7,7 @@ namespace Modifiers_by_MainDen.Modifiers
     {
         private static string name = "Image from File";
         private static string[] argNames = new string[] { "Path" };
-        private static string[] argHints = new string[] { "filepath" };
+        private static string[] argHints = new string[] { "Path to image file." };
         private static string[] argDefaults = new string[] { "" };
 
         public override string Name => name;
@@ -26,7 +26,7 @@ namespace Modifiers_by_MainDen.Modifiers
             string path = ArgStates[0];
             try
             {
-                return (Bitmap)Image.FromFile(path);
+                return (Bitmap)Image.FromFile(path.Replace("\"", ""));
             }
             catch (Exception e)
             {
