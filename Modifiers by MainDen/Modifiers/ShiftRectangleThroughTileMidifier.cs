@@ -7,7 +7,7 @@ namespace Modifiers_by_MainDen.Modifiers
     {
         private static string name = "Shift Rectangle through Tile";
         private static string[] argNames = new string[] { "X", "Y", "Width", "Height" };
-        private static string[] argHints = new string[] { "int", "int", "int|min=0", "int|min=0" };
+        private static string[] argHints = new string[] { "Any integer.", "Any integer.", "Any positive integer.", "Any positive integer." };
         private static string[] argDefaults = new string[] { "0", "0", "100", "100" };
 
         public override string Name => name;

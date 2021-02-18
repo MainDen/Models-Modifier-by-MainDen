@@ -7,8 +7,8 @@ namespace Modifiers_by_MainDen.Modifiers
     {
         private static string name = "Decrease Quality";
         private static string[] argNames = new string[] { "Quality" };
-        private static string[] argHints = new string[] { "float|min=0,MAX=1" };
-        private static string[] argDefaults = new string[] { "0.5" };
+        private static string[] argHints = new string[] { "Value: 0 < value <= 1." };
+        private static string[] argDefaults = new string[] { "0,5" };
 
         public override string Name => name;
         public override string[] ArgNames => argNames;
