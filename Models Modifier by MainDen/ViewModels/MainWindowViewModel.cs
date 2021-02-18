@@ -197,11 +197,19 @@ namespace Models_Modifier_by_MainDen.ViewModels
                     {
                         if (selectedModifier != null)
                         {
-                            AppliedModifiers.Add(SelectedModifier.Modifier);
-                            SelectedModifier = null;
-                            SearchText = "";
+                            AbstractModifier modifier = SelectedModifier;
                             OnPropertyChanged(nameof(Modifiers));
-                            ResultBitmap = null;
+                            try
+                            {
+                                ResultBitmap = (Bitmap)modifier.ApplyTo(ResultBitmap);
+                                AppliedModifiers.Add(modifier);
+                                SelectedModifier = null;
+                                SearchText = "";
+                            }
+                            catch (Exception e)
+                            {
+                                System.Windows.MessageBox.Show(e.Message ?? "Undefined exceptio.");
+                            }
                         }
                     }));
             }
