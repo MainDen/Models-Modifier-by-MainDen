@@ -79,7 +79,7 @@
                     </Grid.RowDefinitions>
                     <Button Height="30" Margin="10" Content="Apply" Command="{Binding ApplyCommand}" />
                     <ScrollViewer Grid.Row="1">
-                        <StackPanel x:Name="properties" />
+                        <StackPanel x:Name="NewModifierArgs" />
                     </ScrollViewer>
                 </Grid>
             </Grid>
@@ -101,11 +101,9 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Button Height="30" Margin="10" Content="Update" />
+                    <Button Height="30" Margin="10" Content="Update" Command="{Binding UpdateCommand}" />
                     <ScrollViewer Grid.Row="1">
-                        <StackPanel>
-
-                        </StackPanel>
+                        <StackPanel x:Name="AppliedModifierArgs" />
                     </ScrollViewer>
                 </Grid>
             </Grid>

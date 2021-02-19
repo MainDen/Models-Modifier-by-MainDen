@@ -22,12 +22,14 @@ namespace Models_Modifier_by_MainDen.ViewModels
         public MainWindowViewModel(MainWindow window) : base(window)
         {
             MainWindow = window;
-            Arg = new ArgModel(MainWindow.properties);
+            Applier = new ArgModel(MainWindow.NewModifierArgs);
+            Updater = new ArgModel(MainWindow.AppliedModifierArgs);
             InitializeAppliedModifiers();
         }
 
         private MainWindow MainWindow { get; set; }
-        private ArgModel Arg { get; set; }
+        private ArgModel Applier { get; set; }
+        private ArgModel Updater { get; set; }
 
         private string filePath;
         public string FilePath
@@ -84,7 +86,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             set
             {
                 selectedModifier = value;
-                Arg.ResetPanelWithTemplate(selectedModifier);
+                Applier.ResetPanelWithTemplate(selectedModifier);
                 OnPropertyChanged(nameof(SelectedModifier));
             }
         }
@@ -95,6 +97,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
         }
         public ObservableCollection<AbstractModifier> AppliedModifiers { get; set; }
         private AbstractModifier selectedAppliedModifier;
+        private AbstractModifier editedAppliedModifier;
         public AbstractModifier SelectedAppliedModifier
         {
             get
@@ -104,6 +107,8 @@ namespace Models_Modifier_by_MainDen.ViewModels
             set
             {
                 selectedAppliedModifier = value;
+                editedAppliedModifier = selectedAppliedModifier?.Modifier;
+                Updater.ResetPanelWithTemplate(editedAppliedModifier);
                 OnPropertyChanged(nameof(SelectedAppliedModifier));
             }
         }
@@ -151,21 +156,22 @@ namespace Models_Modifier_by_MainDen.ViewModels
             return qi == qLength;
         }
 
-        private Bitmap resultBitmap = null;
-        private Bitmap ResultBitmap
+        private List<object> results = new List<object>();
+        private object Result
         {
-            get => resultBitmap;
-            set
+            get
             {
-                resultBitmap = value;
-                OnPropertyChanged(nameof(ResultImage));
+                int count = results.Count;
+                if (count != 0)
+                    return results[count - 1];
+                return null;
             }
         }
         public BitmapImage ResultImage
         {
             get
             {
-                return BitmapToImageSource(ResultBitmap);
+                return BitmapToImageSource(Result as Bitmap);
             }
         }
 
@@ -201,15 +207,82 @@ namespace Models_Modifier_by_MainDen.ViewModels
                             OnPropertyChanged(nameof(Modifiers));
                             try
                             {
-                                ResultBitmap = (Bitmap)modifier.ApplyTo(ResultBitmap);
+                                DateTime timeStart = DateTime.Now;
+                                try
+                                {
+                                    results.Add(modifier.ApplyTo(Result));
+                                }
+                                finally
+                                {
+                                    executionTime = DateTime.Now - timeStart;
+                                    OnPropertyChanged(nameof(ExecutionTime));
+                                }
+                                OnPropertyChanged(nameof(ResultImage));
                                 AppliedModifiers.Add(modifier);
                                 SelectedModifier = null;
                                 SearchText = "";
                             }
                             catch (Exception e)
                             {
-                                System.Windows.MessageBox.Show(e.Message ?? "Undefined exceptio.");
+                                System.Windows.MessageBox.Show(e.Message ?? "Undefined exception.");
                             }
+                        }
+                        else
+                        {
+                            executionTime = TimeSpan.Zero;
+                            OnPropertyChanged(nameof(ExecutionTime));
+                        }
+                    }));
+            }
+        }
+
+        private RelayCommand updateCommand;
+        public RelayCommand UpdateCommand
+        {
+            get
+            {
+                return updateCommand ??
+                    (updateCommand = new RelayCommand(obj =>
+                    {
+                        if (selectedAppliedModifier != null)
+                        {
+                            string[] appliedStates = SelectedAppliedModifier.ArgStates;
+                            string[] updatedStates = editedAppliedModifier?.ArgStates;
+                            int len = appliedStates.Length;
+                            if (len == updatedStates?.Length)
+                                for (int i = 0; i < len; ++i)
+                                    appliedStates[i] = updatedStates[i];
+                            int j;
+                            int count = AppliedModifiers.Count;
+                            object result = null;
+                            for (j = 0; j < count && AppliedModifiers[j] != selectedAppliedModifier; ++j)
+                                result = results[j];
+                            for (int k = j; k < count; ++k)
+                                results[k] = null;
+                            try
+                            {
+                                DateTime timeStart = DateTime.Now;
+                                try
+                                {
+                                for (; j < count; ++j)
+                                    results[j] = result = AppliedModifiers[j].ApplyTo(result);
+                                }
+                                finally
+                                {
+                                    executionTime = DateTime.Now - timeStart;
+                                    OnPropertyChanged(nameof(ExecutionTime));
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                System.Windows.MessageBox.Show(e.Message ?? "Undefined exception.");
+                            }
+                            OnPropertyChanged(nameof(ResultImage));
+                        }
+                        else
+                        {
+                            executionTime = TimeSpan.Zero;
+                            OnPropertyChanged(nameof(ExecutionTime));
                         }
                     }));
             }

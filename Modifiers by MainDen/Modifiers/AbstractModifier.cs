@@ -59,11 +59,11 @@ namespace Modifiers_by_MainDen.Modifiers
                         modifier.Initialize();
                     else
                     {
-                        string[] defaults = ArgDefaults;
-                        int len = defaults.Length;
+                        string[] sourceStates = ArgStates;
+                        int len = sourceStates.Length;
                         string[] states = new string[len];
                         for (int i = 0; i < len; ++i)
-                            states[i] = defaults[i];
+                            states[i] = sourceStates[i];
                         modifier.ArgStates = states;
                     }
                     return modifier;
