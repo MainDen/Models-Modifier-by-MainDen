@@ -31,6 +31,15 @@ namespace Models_Modifier_by_MainDen.ViewModels
         private ArgModel Applier { get; set; }
         private ArgModel Updater { get; set; }
 
+        private TimeSpan executionTime = new TimeSpan(0);
+        public string ExecutionTime
+        {
+            get
+            {
+                return "Execution time: " + executionTime.TotalSeconds + "s";
+            }
+        }
+        
         private string filePath;
         public string FilePath
         {
@@ -42,12 +51,19 @@ namespace Models_Modifier_by_MainDen.ViewModels
             }
         }
 
-        private TimeSpan executionTime = new TimeSpan(0);
-        public string ExecutionTime
+        private string status;
+        public string Status
         {
             get
             {
-                return "Execution time: " + executionTime.TotalSeconds + "s";
+                if (string.IsNullOrWhiteSpace(status))
+                    status = "No events to show.";
+                return "Status: " + status;
+            }
+            set
+            {
+                status = value;
+                OnPropertyChanged();
             }
         }
 
@@ -204,19 +220,28 @@ namespace Models_Modifier_by_MainDen.ViewModels
                         if (selectedModifier != null)
                         {
                             AbstractModifier modifier = SelectedModifier;
-                            OnPropertyChanged(nameof(Modifiers));
                             try
                             {
+                                executionTime = TimeSpan.Zero;
+                                OnPropertyChanged(nameof(ExecutionTime));
+                                Status = "Applying modifier...";
                                 DateTime timeStart = DateTime.Now;
                                 try
                                 {
                                     results.Add(modifier.ApplyTo(Result));
+                                    OnPropertyChanged(nameof(Modifiers));
+                                }
+                                catch
+                                {
+                                    Status = "Applying error.";
+                                    throw;
                                 }
                                 finally
                                 {
                                     executionTime = DateTime.Now - timeStart;
                                     OnPropertyChanged(nameof(ExecutionTime));
                                 }
+                                Status = "Applying successful.";
                                 OnPropertyChanged(nameof(ResultImage));
                                 AppliedModifiers.Add(modifier);
                                 SelectedModifier = null;
@@ -229,6 +254,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                         }
                         else
                         {
+                            Status = "Modifier was not chosen.";
                             executionTime = TimeSpan.Zero;
                             OnPropertyChanged(nameof(ExecutionTime));
                         }
@@ -256,9 +282,17 @@ namespace Models_Modifier_by_MainDen.ViewModels
                             int count = AppliedModifiers.Count;
                             object result = null;
                             for (j = 0; j < count && AppliedModifiers[j] != selectedAppliedModifier; ++j)
-                                result = results[j];
+                                if ((result = results[j]) == null)
+                                {
+                                    executionTime = TimeSpan.Zero;
+                                    OnPropertyChanged(nameof(ExecutionTime));
+                                    Status = $"Error on {j + 1}";
+                                    OnPropertyChanged(nameof(ResultImage));
+                                    return;
+                                }
                             for (int k = j; k < count; ++k)
                                 results[k] = null;
+                            int skipped = j;
                             try
                             {
                                 DateTime timeStart = DateTime.Now;
@@ -269,18 +303,24 @@ namespace Models_Modifier_by_MainDen.ViewModels
                                 }
                                 finally
                                 {
+                                    int updated = j - skipped;
+                                    status = $"Skipped {skipped} | Updated {updated}";
                                     executionTime = DateTime.Now - timeStart;
                                     OnPropertyChanged(nameof(ExecutionTime));
                                 }
                             }
                             catch (Exception e)
                             {
+                                Status = status + $" | Error on {j + 1}";
+                                OnPropertyChanged(nameof(ResultImage));
                                 System.Windows.MessageBox.Show(e.Message ?? "Undefined exception.");
                             }
+                            OnPropertyChanged(nameof(Status));
                             OnPropertyChanged(nameof(ResultImage));
                         }
                         else
                         {
+                            Status = "Modifier was not chosen.";
                             executionTime = TimeSpan.Zero;
                             OnPropertyChanged(nameof(ExecutionTime));
                         }

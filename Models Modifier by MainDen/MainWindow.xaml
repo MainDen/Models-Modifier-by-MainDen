@@ -6,8 +6,10 @@
         xmlns:local="clr-namespace:Models_Modifier_by_MainDen"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
-        WindowStyle="SingleBorderWindow"
-        MinWidth="400" MinHeight="74">
+        WindowStyle="None"
+        MinWidth="400" MinHeight="74"
+        AllowsTransparency="True"
+        Background="#01000000">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" ResizeBorderThickness="7" NonClientFrameEdges="None" />
     </WindowChrome.WindowChrome>
@@ -110,7 +112,7 @@
         </Grid>
         <UniformGrid Grid.Row="2" Columns="3" Style="{DynamicResource HighlightPanel}">
             <TextBlock Grid.Column="0" Style="{DynamicResource NotifyPanel}" Text="{Binding ExecutionTime}" />
-            <TextBlock Grid.Column="1" Style="{DynamicResource NotifyPanel}" Text="Status: Complete" />
+            <TextBlock Grid.Column="1" Style="{DynamicResource NotifyPanel}" Text="{Binding Status}" />
             <TextBlock Grid.Column="2" Style="{DynamicResource NotifyPanel}" Text="{Binding FilePath}" />
         </UniformGrid>
     </Grid>
