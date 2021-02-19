@@ -45,9 +45,9 @@
                     <MenuItem Header="Help" />
                 </Menu>
             </StackPanel>
-            <Button Grid.Column="1" Style="{DynamicResource SystemButton}" Command="{Binding MinimizeCommand}" Content="M 0 0 L 0 2 L 10 2 L 10 0 Z" />
+            <Button Grid.Column="1" Style="{DynamicResource SystemButton}" Command="{Binding MinimizeCommand}" Content="{Binding MinimizeSvgContent}" />
             <Button Grid.Column="2" Style="{DynamicResource SystemButton}" Command="{Binding MaximizeCommand}" Content="{Binding MaximizeSvgContent}" />
-            <Button Grid.Column="3" Style="{DynamicResource SystemButton}" Command="{Binding CloseCommand}" Content="M 0 1 L 1 0 L 5 4 L 9 0 L 10 1 L 6 5 L 10 9 L 9 10 L 5 6 L 1 10 L 0 9 L 4 5 Z" />
+            <Button Grid.Column="3" Style="{DynamicResource SystemButton}" Command="{Binding CloseCommand}" Content="{Binding CloseSvgContent}" />
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
