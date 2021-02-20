@@ -29,7 +29,7 @@ namespace Modifiers_by_MainDen.Modifiers
                     math.SetLocalYInEllipse(i);
                     if (math.ContainsIn())
                         result.SetPixel(j, i, source.GetPixel(
-                            Math.Max(0, Math.Min(result.Width - 1, j)),
+                            Math.Max(0, Math.Min(result.Width - 1, (int)math.GetXInBorder())),
                             Math.Max(0, Math.Min(result.Height - 1, (int)math.GetYInBorder()))
                             ));
                 }
@@ -118,7 +118,7 @@ namespace Modifiers_by_MainDen.Modifiers
                         return a;
                     else
                         return -a;
-                return x / Math.Sqrt(xx / aa + yy * bb);
+                return x / Math.Sqrt(xx / aa + yy / bb);
             }
             public double GetLocalYOnEllipse()
             {
