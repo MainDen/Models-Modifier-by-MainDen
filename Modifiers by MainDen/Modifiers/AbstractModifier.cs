@@ -4,15 +4,19 @@ namespace Modifiers_by_MainDen.Modifiers
 {
     public abstract class AbstractModifier
     {
+        private static string description = "The modifier.";
         private static string[] argNames = new string[0];
         private static string[] argHints = new string[0];
+        private static string[] argFormats = new string[0];
         private static string[] argDefaults = new string[0];
         
         public abstract string Name { get; }
+        public virtual string Description { get; }
         public virtual string[] ArgNames => argNames;
         public virtual string[] ArgHints => argHints;
+        public virtual string[] ArgFormats => argFormats;
         public virtual string[] ArgDefaults => argDefaults;
-        public virtual string[] ArgStates { get; protected set; }
+        public virtual string[] ArgStates { get; protected set; } = null;
         
         public abstract object ApplyTo(object model);
 
@@ -52,6 +56,8 @@ namespace Modifiers_by_MainDen.Modifiers
         {
             get
             {
+                if (this is InvokerModifier invoker)
+                    return invoker.Modifier;
                 try
                 {
                     AbstractModifier modifier = (AbstractModifier)GetType().GetConstructor(new Type[0]).Invoke(new object[0]);

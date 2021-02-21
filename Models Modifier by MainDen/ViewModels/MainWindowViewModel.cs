@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace Models_Modifier_by_MainDen.ViewModels
@@ -76,6 +77,34 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 IEnumerable<Type> types = Assembly.GetAssembly(aType).GetTypes().Where(type => type.IsSubclassOf(aType));
                 foreach (var type in types)
                     modifiers.Add((AbstractModifier)type.GetConstructor(Type.EmptyTypes).Invoke(null));
+                DirectoryInfo mods = Directory.CreateDirectory(@"..\mods");
+                foreach (var dll in mods.GetFiles("*.dll"))
+                {
+                    int loaded = 0;
+                    int count = 0;
+                    try
+                    {
+                        Assembly assembly = Assembly.LoadFile(dll.FullName);
+                        types = assembly.GetTypes().Where(type =>
+                        {
+                            Type bType = type.BaseType;
+                            if (bType is null)
+                                return false;
+                            return bType.FullName == aType.FullName;
+                        });
+                        count = types.Count();
+                        foreach (var type in types)
+                        {
+                            modifiers.Add(new InvokerModifier(type.GetConstructor(Type.EmptyTypes).Invoke(null)));
+                            ++loaded;
+                        }
+                        MessageBox.Show($"Dll \"{dll.Name}\" was loaded. All {loaded} modifiers is ready to use.");
+                    }
+                    catch
+                    {
+                        MessageBox.Show($"Dll \"{dll.Name}\" was not loaded correct. Only {loaded} from {count} modifiers is ready to use.");
+                    }
+                }
             }
             catch { }
         }
