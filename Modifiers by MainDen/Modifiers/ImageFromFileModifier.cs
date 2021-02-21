@@ -8,11 +8,13 @@ namespace Modifiers_by_MainDen.Modifiers
         private static string name = "Image from File";
         private static string[] argNames = new string[] { "Path" };
         private static string[] argHints = new string[] { "Path to image file." };
+        private static string[] argFormats = new string[] { "path image" };
         private static string[] argDefaults = new string[] { "" };
 
         public override string Name => name;
         public override string[] ArgNames => argNames;
         public override string[] ArgHints => argHints;
+        public override string[] ArgFormats => argFormats;
         public override string[] ArgDefaults => argDefaults;
 
         public override object ApplyTo(object model)
