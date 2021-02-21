@@ -1,5 +1,4 @@
 ﻿using Models_Modifier_by_MainDen.Commands;
-using Models_Modifier_by_MainDen.Models;
 using Modifiers_by_MainDen.Modifiers;
 using System;
 using System.Collections.Generic;
@@ -23,14 +22,14 @@ namespace Models_Modifier_by_MainDen.ViewModels
         public MainWindowViewModel(MainWindow window) : base(window)
         {
             MainWindow = window;
-            Applier = new ArgModel(MainWindow.NewModifierArgs);
-            Updater = new ArgModel(MainWindow.AppliedModifierArgs);
+            Applier = new ArgViewModel(MainWindow.NewModifierArgs);
+            Updater = new ArgViewModel(MainWindow.AppliedModifierArgs);
             InitializeAppliedModifiers();
         }
 
         private MainWindow MainWindow { get; set; }
-        private ArgModel Applier { get; set; }
-        private ArgModel Updater { get; set; }
+        private ArgViewModel Applier { get; set; }
+        private ArgViewModel Updater { get; set; }
 
         private TimeSpan executionTime = new TimeSpan(0);
         public string ExecutionTime
