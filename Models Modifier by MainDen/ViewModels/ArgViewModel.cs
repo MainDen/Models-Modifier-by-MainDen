@@ -3,12 +3,12 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Models_Modifier_by_MainDen.Models
+namespace Models_Modifier_by_MainDen.ViewModels
 {
-    public class ArgModel
+    public class ArgViewModel
     {
         Panel Panel;
-        public ArgModel(Panel panel)
+        public ArgViewModel(Panel panel)
         {
             if (panel is null)
                 throw new ArgumentNullException(nameof(panel));
