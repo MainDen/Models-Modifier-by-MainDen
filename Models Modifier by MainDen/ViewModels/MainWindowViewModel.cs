@@ -356,5 +356,26 @@ namespace Models_Modifier_by_MainDen.ViewModels
                     }));
             }
         }
+
+        private RelayCommand newCommand;
+        public RelayCommand NewCommand
+        {
+            get
+            {
+                return newCommand ??
+                    (newCommand = new RelayCommand(obj =>
+                    {
+                        if (MessageBox.Show("Are you sure?", "Create new project.", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                        {
+                            SelectedAppliedModifier = null;
+                            SelectedModifier = null;
+                            AppliedModifiers.Clear();
+                            results.Clear();
+                            OnPropertyChanged(nameof(ResultImage));
+                            OnPropertyChanged(nameof(Modifiers));
+                        }
+                    }));
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@
             <StackPanel MouseLeftButtonDown="OnDragMove" Grid.Column="0" Orientation="Horizontal" Style="{DynamicResource HighlightPanel}">
                 <Menu>
                     <MenuItem Header="File">
-                        <MenuItem Header="New" />
+                        <MenuItem Header="New" Command="{Binding NewCommand}" />
                         <MenuItem Header="Open" />
                         <MenuItem Header="Save" />
                         <MenuItem Header="Close" Command="{Binding CloseCommand}" />
