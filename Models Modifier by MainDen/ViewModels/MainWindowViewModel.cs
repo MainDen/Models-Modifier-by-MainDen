@@ -22,14 +22,14 @@ namespace Models_Modifier_by_MainDen.ViewModels
         public MainWindowViewModel(MainWindow window) : base(window)
         {
             MainWindow = window;
-            Applier = new ArgViewModel(MainWindow.NewModifierArgs);
-            Updater = new ArgViewModel(MainWindow.AppliedModifierArgs);
+            Applier = new StatesViewModel();
+            Updater = new StatesViewModel();
             InitializeAppliedModifiers();
         }
 
         private MainWindow MainWindow { get; set; }
-        private ArgViewModel Applier { get; set; }
-        private ArgViewModel Updater { get; set; }
+        public StatesViewModel Applier { get; set; }
+        public StatesViewModel Updater { get; set; }
 
         private TimeSpan executionTime = new TimeSpan(0);
         public string ExecutionTime
@@ -130,7 +130,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             set
             {
                 selectedModifier = value;
-                Applier.ResetPanelWithTemplate(selectedModifier);
+                Applier.ResetWithModifier(selectedModifier);
                 OnPropertyChanged(nameof(SelectedModifier));
             }
         }
@@ -152,7 +152,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             {
                 selectedAppliedModifier = value;
                 editedAppliedModifier = selectedAppliedModifier?.Modifier;
-                Updater.ResetPanelWithTemplate(editedAppliedModifier);
+                Updater.ResetWithModifier(editedAppliedModifier);
                 OnPropertyChanged(nameof(SelectedAppliedModifier));
             }
         }

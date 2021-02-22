@@ -1,66 +1,83 @@
 ﻿using Modifiers_by_MainDen.Modifiers;
 using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Models_Modifier_by_MainDen.ViewModels
 {
-    public class ArgViewModel
+    public class StatesViewModel
     {
-        Panel Panel;
-        public ArgViewModel(Panel panel)
-        {
-            if (panel is null)
-                throw new ArgumentNullException(nameof(panel));
-            Panel = panel;
-        }
+        public ObservableCollection<FrameworkElement> StateViews { get; set; } = new ObservableCollection<FrameworkElement>();
 
-        private Grid GetArgView(int i, string name, string hint, string format, string[] states)
+        private FrameworkElement GetStateView(int i, string name, string hint, string format, string[] states)
         {
             ToolTip ttHint = new ToolTip();
             ttHint.Content = hint;
 
-            Grid result = new Grid();
+            Grid stateView = new Grid();
             ColumnDefinition cName = new ColumnDefinition();
             ColumnDefinition cState = new ColumnDefinition();
             cName.Width = GridLength.Auto;
-            result.ColumnDefinitions.Add(cName);
-            result.ColumnDefinitions.Add(cState);
-            result.ToolTip = ttHint;
+            stateView.ColumnDefinitions.Add(cName);
+            stateView.ColumnDefinitions.Add(cState);
+            stateView.ToolTip = ttHint;
             
             Label lName = new Label();
             lName.Content = name + ":";
             Grid.SetColumn(lName, 0);
             lName.ToolTip = ttHint;
-            result.Children.Add(lName);
+            stateView.Children.Add(lName);
             
-            FrameworkElement eState = GetElementState(i, format, states);
+            FrameworkElement eState = GetStateSetterView(i, format, states);
             Grid.SetColumn(eState, 1);
             eState.ToolTip = ttHint;
-            result.Children.Add(eState);
+            stateView.Children.Add(eState);
 
-            return result;
+            return stateView;
         }
 
-        private FrameworkElement GetElementState(int i, string format, string[] states)
+        private FrameworkElement GetStateSetterView(int i, string format, string[] states)
         {
-            switch (format)
+            string[] formatParts = format.Split("|");
+            int fpLen = formatParts.Length;
+            string formatType = formatParts[0];
+            string formatTail;
+            switch (fpLen)
             {
-                case "path image":
-                    Button button = new Button();
-                    button.Content = states[i] == "" ? "Open Image File" : states[i];
+                case 0:
+                case 1:
+                    formatTail = "";
+                    break;
+                default:
+                    formatTail = formatParts[1];
+                    break;
+            }
+            for (int j = 2; j < fpLen; ++j)
+                formatTail += '|' + formatParts[j];
+            Button button;
+            TextBlock textBlock;
+            TextBox textBox;
+            switch (formatType.ToLower())
+            {
+                case "openfilepath":
+                    button = new Button();
+                    textBlock = new TextBlock();
+                    textBlock.TextWrapping = TextWrapping.Wrap;
+                    textBlock.Text = states[i] == "" ? "Open File" : states[i];
+                    button.Content = textBlock;
                     button.Click += (s, e) =>
                     {
                         Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
-                        openFileDialog.Filter = "Файлы изображений (*.bmp, *.jpg, *.png)|*.bmp;*.jpg;*.png";
+                        openFileDialog.Filter = formatTail;
                         if (openFileDialog.ShowDialog() == true)
-                            states[i] = openFileDialog.FileName;
-                        button.Content = states[i] == "" ? "Open Image File" : states[i];
+                            states[i] = textBlock.Text = openFileDialog.FileName;
                     };
                     return button;
                 case "text":
                 default:
-                    TextBox textBox = new TextBox();
+                    textBox = new TextBox();
+                    textBox.TextWrapping = TextWrapping.Wrap;
                     textBox.Text = states[i];
                     textBox.TextChanged += (s, e) => states[i] = textBox.Text;
                     return textBox;
@@ -77,9 +94,9 @@ namespace Models_Modifier_by_MainDen.ViewModels
             return false;
         }
 
-        public void ResetPanelWithTemplate(AbstractModifier modifier)
+        public void ResetWithModifier(AbstractModifier modifier)
         {
-            Panel.Children.Clear();
+            StateViews.Clear();
             if (modifier is null)
                 return;
             string[] names = modifier.ArgNames;
@@ -110,7 +127,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             if (len != nlen)
                 throw new MethodAccessException("ArgStates is not initialized.");
             for (int i = 0; i < len; ++i)
-                Panel.Children.Add(GetArgView(i, names[i], hints[i], i < flen ? formats[i] : "text", states));
+                StateViews.Add(GetStateView(i, names[i], hints[i], i < flen ? formats[i] : "text", states));
         }
     }
 }
