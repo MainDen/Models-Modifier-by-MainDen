@@ -93,7 +93,7 @@
                 </Grid>
             </Grid>
             <GridSplitter Grid.Column="1" Style="{DynamicResource VerticalGridSplitter}" />
-            <Image Grid.Column="2"  Source="{Binding ResultImage}" />
+            <Image Grid.Column="2"  Source="{Binding ResultImage}" ToolTip="{Binding ResultToolTip}" />
             <GridSplitter Grid.Column="3" Style="{DynamicResource VerticalGridSplitter}" />
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
@@ -102,7 +102,7 @@
                     <RowDefinition Height="3*" />
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0">
-                    <ListView ItemsSource="{Binding AppliedModifiers}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedAppliedModifier}" />
+                    <ListView ItemsSource="{Binding AppliedModifiers}" DisplayMemberPath="Name" SelectedItem="{Binding Path=Updater.Modifier}" />
                 </ScrollViewer>
                 <GridSplitter Grid.Row="1" Style="{DynamicResource HorizontalGridSplitter}" />
                 <Grid Grid.Row="2">

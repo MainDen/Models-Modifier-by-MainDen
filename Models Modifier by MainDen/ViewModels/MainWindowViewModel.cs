@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace Models_Modifier_by_MainDen.ViewModels
@@ -25,7 +26,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
             Applier = new StatesViewModel();
             Applier.AutoUpdate = true;
             Updater = new StatesViewModel();
-            Updater.AutoUpdate = true;
             InitializeAppliedModifiers();
         }
 
@@ -128,22 +128,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
             AppliedModifiers = new ObservableCollection<AbstractModifier>();
         }
         public ObservableCollection<AbstractModifier> AppliedModifiers { get; set; }
-        private AbstractModifier selectedAppliedModifier;
-        private AbstractModifier editedAppliedModifier;
-        public AbstractModifier SelectedAppliedModifier
-        {
-            get
-            {
-                return selectedAppliedModifier;
-            }
-            set
-            {
-                selectedAppliedModifier = value;
-                editedAppliedModifier = selectedAppliedModifier?.Modifier;
-                Updater.Modifier = editedAppliedModifier;
-                OnPropertyChanged(nameof(SelectedAppliedModifier));
-            }
-        }
         private Type ResultType
         {
             get
@@ -203,7 +187,23 @@ namespace Models_Modifier_by_MainDen.ViewModels
         {
             get
             {
+                OnPropertyChanged(nameof(ResultToolTip));
                 return BitmapToImageSource(Result as Bitmap);
+            }
+        }
+
+        public ToolTip ResultToolTip
+        {
+            get
+            {
+                if (!(Result as Bitmap is null))
+                {
+                    Bitmap res = Result as Bitmap;
+                    ToolTip hint = new ToolTip();
+                    hint.Content = $"Width = {res.Width}, Height = {res.Height}";
+                    return hint;
+                }
+                return null;
             }
         }
 
@@ -286,40 +286,36 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 return updateCommand ??
                     (updateCommand = new RelayCommand(obj =>
                     {
-                        if (selectedAppliedModifier != null)
+                        AbstractModifier modifier = Updater.Modifier;
+                        if (modifier != null)
                         {
-                            string[] appliedStates = SelectedAppliedModifier.ArgStates;
-                            string[] updatedStates = editedAppliedModifier?.ArgStates;
-                            int len = appliedStates.Length;
-                            if (len == updatedStates?.Length)
-                                for (int i = 0; i < len; ++i)
-                                    appliedStates[i] = updatedStates[i];
-                            int j;
+                            Updater.UpdateStates();
+                            int i;
                             int count = AppliedModifiers.Count;
                             object result = null;
-                            for (j = 0; j < count && AppliedModifiers[j] != selectedAppliedModifier; ++j)
-                                if ((result = results[j]) == null)
+                            for (i = 0; i < count && AppliedModifiers[i] != modifier; ++i)
+                                if ((result = results[i]) == null)
                                 {
                                     executionTime = TimeSpan.Zero;
                                     OnPropertyChanged(nameof(ExecutionTime));
-                                    Status = $"Error on {j + 1}";
+                                    Status = $"Error on {i + 1}";
                                     OnPropertyChanged(nameof(ResultImage));
                                     return;
                                 }
-                            for (int k = j; k < count; ++k)
+                            for (int k = i; k < count; ++k)
                                 results[k] = null;
-                            int skipped = j;
+                            int skipped = i;
                             try
                             {
                                 DateTime timeStart = DateTime.Now;
                                 try
                                 {
-                                for (; j < count; ++j)
-                                    results[j] = result = AppliedModifiers[j].ApplyTo(result);
+                                for (; i < count; ++i)
+                                    results[i] = result = AppliedModifiers[i].ApplyTo(result);
                                 }
                                 finally
                                 {
-                                    int updated = j - skipped;
+                                    int updated = i - skipped;
                                     status = $"Skipped {skipped} | Updated {updated}";
                                     executionTime = DateTime.Now - timeStart;
                                     OnPropertyChanged(nameof(ExecutionTime));
@@ -327,7 +323,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                             }
                             catch (Exception e)
                             {
-                                Status = status + $" | Error on {j + 1}";
+                                Status = status + $" | Error on {i + 1}";
                                 OnPropertyChanged(nameof(ResultImage));
                                 System.Windows.MessageBox.Show(e.Message ?? "Undefined exception.");
                             }
@@ -354,7 +350,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                     {
                         if (MessageBox.Show("Are you sure?", "Create new project.", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
-                            SelectedAppliedModifier = null;
+                            Updater.Modifier = null;
                             Applier.Modifier = null;
                             AppliedModifiers.Clear();
                             results.Clear();
