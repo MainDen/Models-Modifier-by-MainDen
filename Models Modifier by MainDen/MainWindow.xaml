@@ -71,7 +71,7 @@
                     </Grid.RowDefinitions>
                     <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
                     <ScrollViewer Grid.Row="2">
-                        <ListView ItemsSource="{Binding Modifiers}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedModifier}" />
+                        <ListView ItemsSource="{Binding Modifiers}" DisplayMemberPath="Name" SelectedItem="{Binding Path=Applier.Modifier}" />
                     </ScrollViewer>
                 </Grid>
                 <GridSplitter Grid.Row="1" Style="{DynamicResource HorizontalGridSplitter}" />

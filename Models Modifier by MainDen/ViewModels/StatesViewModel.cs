@@ -6,11 +6,32 @@ using System.Windows.Controls;
 
 namespace Models_Modifier_by_MainDen.ViewModels
 {
-    public class StatesViewModel
+    public class StatesViewModel : AbstractViewModel
     {
+        public bool AutoUpdate { get; set; } = false;
+
+        private string[] statesBuffer = null;
+
+        private AbstractModifier modifier = null;
+
+        public AbstractModifier Modifier
+        {
+            get => modifier;
+            set
+            {
+                modifier = value;
+                statesBuffer = null;
+                StateViews.Clear();
+                if (!(modifier is null))
+                    ResetStateViews();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(StateViews));
+            }
+        }
+        
         public ObservableCollection<FrameworkElement> StateViews { get; set; } = new ObservableCollection<FrameworkElement>();
 
-        private FrameworkElement GetStateView(int i, string name, string hint, string format, string[] states)
+        private FrameworkElement GetStateView(int i, string name, string hint, string format)
         {
             ToolTip ttHint = new ToolTip();
             ttHint.Content = hint;
@@ -29,7 +50,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             lName.ToolTip = ttHint;
             stateView.Children.Add(lName);
             
-            FrameworkElement eState = GetStateSetterView(i, format, states);
+            FrameworkElement eState = GetStateSetterView(i, format);
             Grid.SetColumn(eState, 1);
             eState.ToolTip = ttHint;
             stateView.Children.Add(eState);
@@ -37,7 +58,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             return stateView;
         }
 
-        private FrameworkElement GetStateSetterView(int i, string format, string[] states)
+        private FrameworkElement GetStateSetterView(int i, string format)
         {
             string[] formatParts = format.Split("|");
             int fpLen = formatParts.Length;
@@ -64,22 +85,22 @@ namespace Models_Modifier_by_MainDen.ViewModels
                     button = new Button();
                     textBlock = new TextBlock();
                     textBlock.TextWrapping = TextWrapping.Wrap;
-                    textBlock.Text = states[i] == "" ? "Open File" : states[i];
+                    textBlock.Text = GetStateAt(i) == "" ? "Open File" : GetStateAt(i);
                     button.Content = textBlock;
                     button.Click += (s, e) =>
                     {
                         Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
                         openFileDialog.Filter = formatTail;
                         if (openFileDialog.ShowDialog() == true)
-                            states[i] = textBlock.Text = openFileDialog.FileName;
+                            SetStateAt(i, textBlock.Text = openFileDialog.FileName);
                     };
                     return button;
                 case "text":
                 default:
                     textBox = new TextBox();
                     textBox.TextWrapping = TextWrapping.Wrap;
-                    textBox.Text = states[i];
-                    textBox.TextChanged += (s, e) => states[i] = textBox.Text;
+                    textBox.Text = GetStateAt(i);
+                    textBox.TextChanged += (s, e) => SetStateAt(i, textBox.Text);
                     return textBox;
             }
         }
@@ -94,40 +115,57 @@ namespace Models_Modifier_by_MainDen.ViewModels
             return false;
         }
 
-        public void ResetWithModifier(AbstractModifier modifier)
+        private void ResetStateViews()
         {
-            StateViews.Clear();
             if (modifier is null)
                 return;
+            
             string[] names = modifier.ArgNames;
             string[] hints = modifier.ArgHints;
             string[] formats = modifier.ArgFormats;
             string[] states = modifier.ArgStates;
-            try
-            {
-                if (ContainsNull(names))
-                    throw new NullReferenceException("ArgNames must not be null.");
-                if (ContainsNull(hints))
-                    throw new NullReferenceException("ArgHints must not be null.");
-                if (ContainsNull(formats))
-                    throw new NullReferenceException("ArgFormats must not be null.");
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Invalid class implementation.", e);
-            }
+            
             if (ContainsNull(states))
                 throw new MethodAccessException("ArgStates is not initialized.");
-            int nlen = names.Length;
-            int hlen = hints.Length;
-            int flen = formats.Length;
-            if (nlen != hlen)
-                throw new Exception("Invalid class implementation.", new Exception($"Different count of argument properties: {nlen} ArgNames & {hlen} ArgHints."));
+            
+            int nlen = names?.Length ?? 0;
+            int hlen = hints?.Length ?? 0;
+            int flen = formats?.Length ?? 0;
             int len = states.Length;
-            if (len != nlen)
-                throw new MethodAccessException("ArgStates is not initialized.");
+            
+            statesBuffer = new string[len];
             for (int i = 0; i < len; ++i)
-                StateViews.Add(GetStateView(i, names[i], hints[i], i < flen ? formats[i] : "text", states));
+                statesBuffer[i] = states[i];
+
+            const string hintDefault = "Has no hint.";
+            const string formatDefault = "text";
+            for (int i = 0; i < len; ++i)
+                StateViews.Add(GetStateView(i,
+                    i < nlen ? names[i] ?? $"Arg {i + 1}:" : $"Arg {i + 1}:",
+                    i < hlen ? hints[i] ?? hintDefault : hintDefault,
+                    i < flen ? formats[i] ?? formatDefault : formatDefault));
+        }
+
+        private string GetStateAt(int i)
+        {
+            return statesBuffer[i];
+        }
+
+        private void SetStateAt(int i, string value)
+        {
+            statesBuffer[i] = value;
+            if (AutoUpdate)
+                modifier.ArgStates[i] = value;
+        }
+
+        public void UpdateStates()
+        {
+            if (statesBuffer is null)
+                return;
+            string[] states = modifier.ArgStates;
+            int len = states?.Length ?? 0;
+            for (int i = 0; i < len; ++i)
+                states[i] = statesBuffer[i];
         }
     }
 }

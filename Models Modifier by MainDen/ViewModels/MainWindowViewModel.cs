@@ -23,7 +23,9 @@ namespace Models_Modifier_by_MainDen.ViewModels
         {
             MainWindow = window;
             Applier = new StatesViewModel();
+            Applier.AutoUpdate = true;
             Updater = new StatesViewModel();
+            Updater.AutoUpdate = true;
             InitializeAppliedModifiers();
         }
 
@@ -120,20 +122,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 return visibleModifiers;
             }
         }
-        private AbstractModifier selectedModifier;
-        public AbstractModifier SelectedModifier
-        {
-            get
-            {
-                return selectedModifier;
-            }
-            set
-            {
-                selectedModifier = value;
-                Applier.ResetWithModifier(selectedModifier);
-                OnPropertyChanged(nameof(SelectedModifier));
-            }
-        }
 
         private void InitializeAppliedModifiers()
         {
@@ -152,7 +140,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             {
                 selectedAppliedModifier = value;
                 editedAppliedModifier = selectedAppliedModifier?.Modifier;
-                Updater.ResetWithModifier(editedAppliedModifier);
+                Updater.Modifier = editedAppliedModifier;
                 OnPropertyChanged(nameof(SelectedAppliedModifier));
             }
         }
@@ -245,9 +233,9 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 return applyCommand ??
                     (applyCommand = new RelayCommand(obj =>
                     {
-                        if (selectedModifier != null)
+                        AbstractModifier modifier = Applier.Modifier;
+                        if (modifier != null)
                         {
-                            AbstractModifier modifier = SelectedModifier;
                             try
                             {
                                 executionTime = TimeSpan.Zero;
@@ -272,7 +260,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                                 Status = "Applying successful.";
                                 OnPropertyChanged(nameof(ResultImage));
                                 AppliedModifiers.Add(modifier);
-                                SelectedModifier = null;
+                                Applier.Modifier = null;
                                 SearchText = "";
                             }
                             catch (Exception e)
@@ -367,7 +355,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                         if (MessageBox.Show("Are you sure?", "Create new project.", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
                             SelectedAppliedModifier = null;
-                            SelectedModifier = null;
+                            Applier.Modifier = null;
                             AppliedModifiers.Clear();
                             results.Clear();
                             OnPropertyChanged(nameof(ResultImage));
