@@ -1,4 +1,4 @@
-﻿using Modifiers_by_MainDen.Modifiers;
+﻿using Modifiers_Core_by_MainDen.Modifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;

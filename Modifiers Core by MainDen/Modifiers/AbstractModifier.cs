@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Modifiers_by_MainDen.Modifiers
+namespace Modifiers_Core_by_MainDen.Modifiers
 {
     public abstract class AbstractModifier
     {

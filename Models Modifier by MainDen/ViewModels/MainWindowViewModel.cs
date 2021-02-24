@@ -1,16 +1,12 @@
 ﻿using Models_Modifier_by_MainDen.Commands;
-using Modifiers_by_MainDen.Modifiers;
+using Modifiers_Core_by_MainDen.Modifiers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace Models_Modifier_by_MainDen.ViewModels
 {
@@ -23,7 +19,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
 
         public MainWindowViewModel(MainWindow window) : base(window)
         {
-            MainWindow = window;
             Applier = new StatesViewModel();
             Applier.AutoInitialize = true;
             Applier.AutoUpdate = true;
@@ -32,7 +27,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
             InitializeAppliedModifiers();
         }
 
-        private MainWindow MainWindow { get; set; }
         public StatesViewModel Applier { get; set; }
         public StatesViewModel Updater { get; set; }
         public ModelViewModel Result { get; set; }
@@ -102,9 +96,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
             try
             {
                 Type aType = typeof(AbstractModifier);
-                IEnumerable<Type> types = Assembly.GetAssembly(aType).GetTypes().Where(type => type.IsSubclassOf(aType));
-                foreach (var type in types)
-                    modifiers.Add((AbstractModifier)type.GetConstructor(Type.EmptyTypes).Invoke(null));
+                IEnumerable<Type> types;
                 foreach (var dll in DirectoryContext.CreateDirectory(@"mods").GetFiles("*.dll"))
                     try
                     {
@@ -152,6 +144,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 return type;
             }
         }
+        private List<object> results = new List<object>();
         
         private string searchText = "";
         public string SearchText
@@ -186,8 +179,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
                     ++qi;
             return qi == qLength;
         }
-
-        private List<object> results = new List<object>();
 
         private RelayCommand applyCommand;
         public RelayCommand ApplyCommand

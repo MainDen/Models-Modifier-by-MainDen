@@ -1,7 +1,5 @@
-﻿using Modifiers_by_MainDen.Modifiers;
-using System;
-using System.Collections.ObjectModel;
-using System.Drawing;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
 using C = System.Windows.Controls;
@@ -46,7 +44,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
         {
             using (MemoryStream memory = new MemoryStream())
             {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                bitmap.Save(memory, ImageFormat.Bmp);
                 memory.Position = 0;
                 BitmapImage bitmapimage = new BitmapImage();
                 bitmapimage.BeginInit();

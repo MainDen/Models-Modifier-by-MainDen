@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Modifiers_Core_by_MainDen.Modifiers;
+using System;
 using System.Drawing;
 
-namespace Modifiers_by_MainDen.Modifiers
+namespace Standart_Modifiers_for_Bitmap_by_MainDen.Modifiers
 {
     public class StretchModifier : AbstractModifier
     {
