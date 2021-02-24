@@ -8,8 +8,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
 {
     public class StatesViewModel : AbstractViewModel
     {
-        public bool AutoUpdate { get; set; } = false;
-
         private string[] statesBuffer = null;
 
         private AbstractModifier modifier = null;
@@ -19,8 +17,8 @@ namespace Models_Modifier_by_MainDen.ViewModels
             get => modifier;
             set
             {
-                modifier = value;
                 statesBuffer = null;
+                modifier = value;
                 StateViews.Clear();
                 if (!(modifier is null))
                     ResetStateViews();
@@ -28,8 +26,41 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 OnPropertyChanged(nameof(StateViews));
             }
         }
-        
+
         public ObservableCollection<FrameworkElement> StateViews { get; set; } = new ObservableCollection<FrameworkElement>();
+        
+        public bool AutoUpdate { get; set; } = false;
+
+        private void ResetStateViews()
+        {
+            if (modifier is null)
+                return;
+            
+            string[] names = modifier.ArgNames;
+            string[] hints = modifier.ArgHints;
+            string[] formats = modifier.ArgFormats;
+            string[] states = modifier.ArgStates;
+            
+            if (ContainsNull(states))
+                throw new MethodAccessException("ArgStates is not initialized.");
+            
+            int nlen = names?.Length ?? 0;
+            int hlen = hints?.Length ?? 0;
+            int flen = formats?.Length ?? 0;
+            int len = states.Length;
+            
+            statesBuffer = new string[len];
+            for (int i = 0; i < len; ++i)
+                statesBuffer[i] = states[i];
+
+            const string hintDefault = "Has no hint.";
+            const string formatDefault = "text";
+            for (int i = 0; i < len; ++i)
+                StateViews.Add(GetStateView(i,
+                    i < nlen ? names[i] ?? $"Arg {i + 1}:" : $"Arg {i + 1}:",
+                    i < hlen ? hints[i] ?? hintDefault : hintDefault,
+                    i < flen ? formats[i] ?? formatDefault : formatDefault));
+        }
 
         private FrameworkElement GetStateView(int i, string name, string hint, string format)
         {
@@ -113,37 +144,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 if (str is null)
                     return true;
             return false;
-        }
-
-        private void ResetStateViews()
-        {
-            if (modifier is null)
-                return;
-            
-            string[] names = modifier.ArgNames;
-            string[] hints = modifier.ArgHints;
-            string[] formats = modifier.ArgFormats;
-            string[] states = modifier.ArgStates;
-            
-            if (ContainsNull(states))
-                throw new MethodAccessException("ArgStates is not initialized.");
-            
-            int nlen = names?.Length ?? 0;
-            int hlen = hints?.Length ?? 0;
-            int flen = formats?.Length ?? 0;
-            int len = states.Length;
-            
-            statesBuffer = new string[len];
-            for (int i = 0; i < len; ++i)
-                statesBuffer[i] = states[i];
-
-            const string hintDefault = "Has no hint.";
-            const string formatDefault = "text";
-            for (int i = 0; i < len; ++i)
-                StateViews.Add(GetStateView(i,
-                    i < nlen ? names[i] ?? $"Arg {i + 1}:" : $"Arg {i + 1}:",
-                    i < hlen ? hints[i] ?? hintDefault : hintDefault,
-                    i < flen ? formats[i] ?? formatDefault : formatDefault));
         }
 
         private string GetStateAt(int i)
