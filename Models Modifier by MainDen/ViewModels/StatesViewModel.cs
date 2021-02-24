@@ -29,13 +29,18 @@ namespace Models_Modifier_by_MainDen.ViewModels
 
         public ObservableCollection<FrameworkElement> StateViews { get; set; } = new ObservableCollection<FrameworkElement>();
         
+        public bool AutoInitialize { get; set; } = false;
+
         public bool AutoUpdate { get; set; } = false;
 
         private void ResetStateViews()
         {
             if (modifier is null)
                 return;
-            
+
+            if (AutoInitialize)
+                modifier.Initialize();
+
             string[] names = modifier.ArgNames;
             string[] hints = modifier.ArgHints;
             string[] formats = modifier.ArgFormats;

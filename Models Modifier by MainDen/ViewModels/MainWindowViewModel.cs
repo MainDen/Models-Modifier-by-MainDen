@@ -1,6 +1,7 @@
 ﻿using Models_Modifier_by_MainDen.Commands;
 using Modifiers_by_MainDen.Modifiers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -24,14 +25,17 @@ namespace Models_Modifier_by_MainDen.ViewModels
         {
             MainWindow = window;
             Applier = new StatesViewModel();
+            Applier.AutoInitialize = true;
             Applier.AutoUpdate = true;
             Updater = new StatesViewModel();
+            Result = new ModelViewModel();
             InitializeAppliedModifiers();
         }
 
         private MainWindow MainWindow { get; set; }
         public StatesViewModel Applier { get; set; }
         public StatesViewModel Updater { get; set; }
+        public ModelViewModel Result { get; set; }
 
         private TimeSpan executionTime = new TimeSpan(0);
         public string ExecutionTime
@@ -69,20 +73,39 @@ namespace Models_Modifier_by_MainDen.ViewModels
             }
         }
 
+        private class DirectoryContext
+        {
+            private DirectoryContext(string path)
+            {
+                root = Directory.CreateDirectory(path);
+            }
+
+            private DirectoryInfo root;
+
+            public IEnumerable<FileInfo> GetFiles(string searchPattern)
+            {
+                foreach (var file in root.GetFiles(searchPattern))
+                    yield return file;
+                foreach (var subdir in root.GetDirectories("*", SearchOption.AllDirectories))
+                    foreach (var file in subdir.GetFiles(searchPattern))
+                        yield return file;
+            }
+
+            public static DirectoryContext CreateDirectory(string path)
+            {
+                return new DirectoryContext(path);
+            }
+        }
         private static void InitializeModifiers()
         {
+            modifiers = new ObservableCollection<AbstractModifier>();
             try
             {
-                modifiers = new ObservableCollection<AbstractModifier>();
                 Type aType = typeof(AbstractModifier);
                 IEnumerable<Type> types = Assembly.GetAssembly(aType).GetTypes().Where(type => type.IsSubclassOf(aType));
                 foreach (var type in types)
                     modifiers.Add((AbstractModifier)type.GetConstructor(Type.EmptyTypes).Invoke(null));
-                DirectoryInfo mods = Directory.CreateDirectory(@"..\mods");
-                foreach (var dll in mods.GetFiles("*.dll"))
-                {
-                    int loaded = 0;
-                    int count = 0;
+                foreach (var dll in DirectoryContext.CreateDirectory(@"mods").GetFiles("*.dll"))
                     try
                     {
                         Assembly assembly = Assembly.LoadFile(dll.FullName);
@@ -93,19 +116,10 @@ namespace Models_Modifier_by_MainDen.ViewModels
                                 return false;
                             return bType.FullName == aType.FullName;
                         });
-                        count = types.Count();
                         foreach (var type in types)
-                        {
                             modifiers.Add(new InvokerModifier(type.GetConstructor(Type.EmptyTypes).Invoke(null)));
-                            ++loaded;
-                        }
-                        MessageBox.Show($"Dll \"{dll.Name}\" was loaded. All {loaded} modifiers is ready to use.");
                     }
-                    catch
-                    {
-                        MessageBox.Show($"Dll \"{dll.Name}\" was not loaded correct. Only {loaded} from {count} modifiers is ready to use.");
-                    }
-                }
+                    catch { }
             }
             catch { }
         }
@@ -138,6 +152,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 return type;
             }
         }
+        
         private string searchText = "";
         public string SearchText
         {
@@ -173,57 +188,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
         }
 
         private List<object> results = new List<object>();
-        private object Result
-        {
-            get
-            {
-                int count = results.Count;
-                if (count != 0)
-                    return results[count - 1];
-                return null;
-            }
-        }
-        public BitmapImage ResultImage
-        {
-            get
-            {
-                OnPropertyChanged(nameof(ResultToolTip));
-                return BitmapToImageSource(Result as Bitmap);
-            }
-        }
-
-        public ToolTip ResultToolTip
-        {
-            get
-            {
-                if (!(Result as Bitmap is null))
-                {
-                    Bitmap res = Result as Bitmap;
-                    ToolTip hint = new ToolTip();
-                    hint.Content = $"Width = {res.Width}, Height = {res.Height}";
-                    return hint;
-                }
-                return null;
-            }
-        }
-
-        private BitmapImage BitmapToImageSource(Bitmap bitmap)
-        {
-            if (bitmap is null)
-                return null;
-            using (MemoryStream memory = new MemoryStream())
-            {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
-                memory.Position = 0;
-                BitmapImage bitmapimage = new BitmapImage();
-                bitmapimage.BeginInit();
-                bitmapimage.StreamSource = memory;
-                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapimage.EndInit();
-
-                return bitmapimage;
-            }
-        }
 
         private RelayCommand applyCommand;
         public RelayCommand ApplyCommand
@@ -244,7 +208,9 @@ namespace Models_Modifier_by_MainDen.ViewModels
                                 DateTime timeStart = DateTime.Now;
                                 try
                                 {
-                                    results.Add(modifier.ApplyTo(Result));
+                                    object result = modifier.ApplyTo(Result.Model);
+                                    results.Add(result);
+                                    Result.Model = result;
                                     OnPropertyChanged(nameof(Modifiers));
                                 }
                                 catch
@@ -258,7 +224,6 @@ namespace Models_Modifier_by_MainDen.ViewModels
                                     OnPropertyChanged(nameof(ExecutionTime));
                                 }
                                 Status = "Applying successful.";
-                                OnPropertyChanged(nameof(ResultImage));
                                 AppliedModifiers.Add(modifier);
                                 Applier.Modifier = null;
                                 SearchText = "";
@@ -299,7 +264,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                                     executionTime = TimeSpan.Zero;
                                     OnPropertyChanged(nameof(ExecutionTime));
                                     Status = $"Error on {i + 1}";
-                                    OnPropertyChanged(nameof(ResultImage));
+                                    Result.Model = result;
                                     return;
                                 }
                             for (int k = i; k < count; ++k)
@@ -324,11 +289,11 @@ namespace Models_Modifier_by_MainDen.ViewModels
                             catch (Exception e)
                             {
                                 Status = status + $" | Error on {i + 1}";
-                                OnPropertyChanged(nameof(ResultImage));
+                                Result.Model = result;
                                 System.Windows.MessageBox.Show(e.Message ?? "Undefined exception.");
                             }
                             OnPropertyChanged(nameof(Status));
-                            OnPropertyChanged(nameof(ResultImage));
+                            Result.Model = result;
                         }
                         else
                         {
@@ -352,9 +317,9 @@ namespace Models_Modifier_by_MainDen.ViewModels
                         {
                             Updater.Modifier = null;
                             Applier.Modifier = null;
+                            Result.Model = null;
                             AppliedModifiers.Clear();
                             results.Clear();
-                            OnPropertyChanged(nameof(ResultImage));
                             OnPropertyChanged(nameof(Modifiers));
                         }
                     }));
