@@ -9,7 +9,7 @@ namespace Standart_Modifiers_for_Bitmap_by_MainDen.Modifiers
         private static string name = "Image from File";
         private static string[] argNames = new string[] { "Path" };
         private static string[] argHints = new string[] { "Path to image file." };
-        private static string[] argFormats = new string[] { "openfilepath|Image files (*.bmp, *.jpg, *.png)|*.bmp;*.jpg;*.png" };
+        private static string[] argFormats = new string[] { "openfilepath|Image files (*.bmp, *.gif, *.jpg, *.png)|*.bmp;*.gif;*.jpg;*.png" };
         private static string[] argDefaults = new string[] { "" };
 
         public override string Name => name;
