@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Modifiers_Core_by_MainDen.Modifiers
+namespace MainDen.ModifiersCore.Modifiers
 {
-    public abstract class AbstractModifier
+    public abstract class AbstractModifier : ICloneable
     {
         private static string description = "The modifier.";
         private static string[] argNames = new string[0];
@@ -11,7 +11,7 @@ namespace Modifiers_Core_by_MainDen.Modifiers
         private static string[] argDefaults = new string[0];
         
         public abstract string Name { get; }
-        public virtual string Description { get; }
+        public virtual string Description { get => description; }
         public virtual string[] ArgNames => argNames;
         public virtual string[] ArgHints => argHints;
         public virtual string[] ArgFormats => argFormats;
@@ -23,6 +23,46 @@ namespace Modifiers_Core_by_MainDen.Modifiers
         public abstract bool CanBeAppliedTo(Type modelType);
 
         public abstract Type ResultType(Type modelType);
+
+        public void Initialize()
+        {
+            string[] defaults = ArgDefaults;
+            if (defaults is null)
+                throw new Exception("Invalid class implementation.", new NullReferenceException("ArgDefaults return null value."));
+            int len = defaults.Length;
+            string[] states = new string[len];
+            for (int i = 0; i < len; ++i)
+                states[i] = defaults[i];
+            ArgStates = states;
+        }
+
+        public AbstractModifier Clone()
+        {
+            if (this is InvokerModifier invoker)
+                return invoker.Clone();
+            try
+            {
+                AbstractModifier modifier = (AbstractModifier)GetType().GetConstructor(new Type[0]).Invoke(new object[0]);
+                if (ContainsNullArgStates())
+                    modifier.Initialize();
+                else
+                {
+                    string[] sourceStates = ArgStates;
+                    int len = sourceStates.Length;
+                    string[] states = new string[len];
+                    for (int i = 0; i < len; ++i)
+                        states[i] = sourceStates[i];
+                    modifier.ArgStates = states;
+                }
+                return modifier;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Invalid class implementation.", e);
+            }
+        }
+
+        object ICloneable.Clone() => Clone();
 
         protected bool ContainsNullArgStates()
         {
@@ -40,45 +80,6 @@ namespace Modifiers_Core_by_MainDen.Modifiers
                 if (state is null)
                     return true;
             return false;
-        }
-        public void Initialize()
-        {
-            string[] defaults = ArgDefaults;
-            if (defaults is null)
-                throw new Exception("Invalid class implementation.", new NullReferenceException("ArgDefaults return null value."));
-            int len = defaults.Length;
-            string[] states = new string[len];
-            for (int i = 0; i < len; ++i)
-                states[i] = defaults[i];
-            ArgStates = states;
-        }
-        public AbstractModifier Modifier
-        {
-            get
-            {
-                if (this is InvokerModifier invoker)
-                    return invoker.Modifier;
-                try
-                {
-                    AbstractModifier modifier = (AbstractModifier)GetType().GetConstructor(new Type[0]).Invoke(new object[0]);
-                    if (ContainsNullArgStates())
-                        modifier.Initialize();
-                    else
-                    {
-                        string[] sourceStates = ArgStates;
-                        int len = sourceStates.Length;
-                        string[] states = new string[len];
-                        for (int i = 0; i < len; ++i)
-                            states[i] = sourceStates[i];
-                        modifier.ArgStates = states;
-                    }
-                    return modifier;
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Invalid class implementation.", e);
-                }
-            }
         }
     }
 }

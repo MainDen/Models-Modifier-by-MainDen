@@ -1,8 +1,8 @@
-﻿using Models_Modifier_by_MainDen.ViewModels;
+﻿using MainDen.ModelsModifier.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Models_Modifier_by_MainDen
+namespace MainDen.ModelsModifier
 {
     public partial class MainWindow : Window
     {

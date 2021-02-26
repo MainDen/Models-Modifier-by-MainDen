@@ -1,8 +1,8 @@
-﻿using Modifiers_Core_by_MainDen.Modifiers;
+﻿using MainDen.ModifiersCore.Modifiers;
 using System;
 using System.Drawing;
 
-namespace Standart_Modifiers_for_Bitmap_by_MainDen.Modifiers
+namespace MainDen.StandardBitmapModifiersPack.Modifiers
 {
     public class ImageFromFileModifier : AbstractModifier
     {

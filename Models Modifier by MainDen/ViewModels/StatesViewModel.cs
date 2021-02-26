@@ -1,10 +1,10 @@
-﻿using Modifiers_Core_by_MainDen.Modifiers;
+﻿using MainDen.ModifiersCore.Modifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Models_Modifier_by_MainDen.ViewModels
+namespace MainDen.ModelsModifier.ViewModels
 {
     public class StatesViewModel : AbstractViewModel
     {

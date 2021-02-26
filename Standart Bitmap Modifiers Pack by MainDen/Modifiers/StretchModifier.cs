@@ -1,15 +1,15 @@
-﻿using Modifiers_Core_by_MainDen.Modifiers;
+﻿using MainDen.ModifiersCore.Modifiers;
 using System;
 using System.Drawing;
 
-namespace Standart_Modifiers_for_Bitmap_by_MainDen.Modifiers
+namespace MainDen.StandardBitmapModifiersPack.Modifiers
 {
-    public class ShiftRectangleThroughTileModifier : AbstractModifier
+    public class StretchModifier : AbstractModifier
     {
-        private static string name = "Shift Rectangle through Tile";
-        private static string[] argNames = new string[] { "X", "Y", "Width", "Height" };
-        private static string[] argHints = new string[] { "Any integer.", "Any integer.", "Any positive integer.", "Any positive integer." };
-        private static string[] argDefaults = new string[] { "0", "0", "100", "100" };
+        private static string name = "Stretch";
+        private static string[] argNames = new string[] { "Width", "Height" };
+        private static string[] argHints = new string[] { "Any positive integer.", "Any positive integer." };
+        private static string[] argDefaults = new string[] { "100", "100" };
 
         public override string Name => name;
         public override string[] ArgNames => argNames;
@@ -28,14 +28,12 @@ namespace Standart_Modifiers_for_Bitmap_by_MainDen.Modifiers
             if (ContainsNullArgStates())
                 throw new Exception("Invalid args.", new MethodAccessException("ArgStates is not initialized."));
 
-            int x, y, width, height;
+            int width, height;
             try
             {
                 string[] states = ArgStates;
-                x = ((int.Parse(states[0]) % source.Width) + source.Width) % source.Width;
-                y = ((int.Parse(states[1]) % source.Height) + source.Height) % source.Height;
-                width = int.Parse(states[2]);
-                height = int.Parse(states[3]);
+                width = int.Parse(states[0]);
+                height = int.Parse(states[1]);
             }
             catch
             {
@@ -46,9 +44,7 @@ namespace Standart_Modifiers_for_Bitmap_by_MainDen.Modifiers
 
             Bitmap result = new Bitmap(width, height);
             using (Graphics g = Graphics.FromImage(result))
-                for (int i = -y; i < height; i += source.Height)
-                    for (int j = -x; j < width; j += source.Width)
-                        g.DrawImage(source, j, i);
+                g.DrawImage(source, 0, 0, width, height);
             return result;
         }
 

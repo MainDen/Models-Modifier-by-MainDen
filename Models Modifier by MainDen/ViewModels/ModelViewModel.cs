@@ -5,7 +5,7 @@ using System.Windows;
 using C = System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace Models_Modifier_by_MainDen.ViewModels
+namespace MainDen.ModelsModifier.ViewModels
 {
     public class ModelViewModel : AbstractViewModel
     {

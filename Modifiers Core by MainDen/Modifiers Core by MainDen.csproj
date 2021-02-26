@@ -1,9 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Modifiers_Core_by_MainDen</RootNamespace>
-    <UseWPF>true</UseWPF>
+    <RootNamespace>MainDen.ModifiersCore</RootNamespace>
   </PropertyGroup>
 
 </Project>

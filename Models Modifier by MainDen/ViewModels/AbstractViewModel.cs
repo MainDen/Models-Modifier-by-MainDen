@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Models_Modifier_by_MainDen.ViewModels
+namespace MainDen.ModelsModifier.ViewModels
 {
     public abstract class AbstractViewModel : INotifyPropertyChanged
     {

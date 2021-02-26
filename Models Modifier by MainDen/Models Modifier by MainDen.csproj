@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Models_Modifier_by_MainDen</RootNamespace>
+    <RootNamespace>MainDen.ModelsModifier</RootNamespace>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 

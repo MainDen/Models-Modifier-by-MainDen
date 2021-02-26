@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Modifiers_Core_by_MainDen.Modifiers
+namespace MainDen.ModifiersCore.Modifiers
 {
-    public class InvokerModifier : AbstractModifier
+    public class InvokerModifier : AbstractModifier, ICloneable
     {
         private object modifier;
         private Type type;
@@ -176,6 +176,7 @@ namespace Modifiers_Core_by_MainDen.Modifiers
                 }
             }
         }
+
         public override object ApplyTo(object model)
         {
             if (modifier is null)
@@ -193,6 +194,7 @@ namespace Modifiers_Core_by_MainDen.Modifiers
                 throw new Exception("Invalid class implementation.", e);
             }
         }
+        
         public override bool CanBeAppliedTo(Type modelType)
         {
             if (modifier is null)
@@ -208,6 +210,7 @@ namespace Modifiers_Core_by_MainDen.Modifiers
                 throw new Exception("Invalid class implementation.", e);
             }
         }
+        
         public override Type ResultType(Type modelType)
         {
             if (modifier is null)
@@ -226,33 +229,32 @@ namespace Modifiers_Core_by_MainDen.Modifiers
             }
         }
 
-        public new AbstractModifier Modifier
+        public new InvokerModifier Clone()
         {
-            get
+            if (modifier is null)
+                return new InvokerModifier();
+            try
             {
-                if (modifier is null)
-                    return new InvokerModifier();
-                try
+                InvokerModifier modifier = new InvokerModifier(type.GetConstructor(new Type[0]).Invoke(new object[0]));
+                if (ContainsNullArgStates())
+                    modifier.Initialize();
+                else
                 {
-                    InvokerModifier modifier = new InvokerModifier(type.GetConstructor(new Type[0]).Invoke(new object[0]));
-                    if (ContainsNullArgStates())
-                        modifier.Initialize();
-                    else
-                    {
-                        string[] sourceStates = ArgStates;
-                        int len = sourceStates.Length;
-                        string[] states = new string[len];
-                        for (int i = 0; i < len; ++i)
-                            states[i] = sourceStates[i];
-                        modifier.ArgStates = states;
-                    }
-                    return modifier;
+                    string[] sourceStates = ArgStates;
+                    int len = sourceStates.Length;
+                    string[] states = new string[len];
+                    for (int i = 0; i < len; ++i)
+                        states[i] = sourceStates[i];
+                    modifier.ArgStates = states;
                 }
-                catch (Exception e)
-                {
-                    throw new Exception("Invalid class implementation.", e);
-                }
+                return modifier;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Invalid class implementation.", e);
             }
         }
+
+        object ICloneable.Clone() => Clone();
     }
 }

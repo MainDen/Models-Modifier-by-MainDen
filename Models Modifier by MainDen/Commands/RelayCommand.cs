@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Models_Modifier_by_MainDen.Commands
+namespace MainDen.ModelsModifier.Commands
 {
     public class RelayCommand : ICommand
     {

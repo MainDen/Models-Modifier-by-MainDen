@@ -1,5 +1,5 @@
-﻿using Models_Modifier_by_MainDen.Commands;
-using Modifiers_Core_by_MainDen.Modifiers;
+﻿using MainDen.ModelsModifier.Commands;
+using MainDen.ModifiersCore.Modifiers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 
-namespace Models_Modifier_by_MainDen.ViewModels
+namespace MainDen.ModelsModifier.ViewModels
 {
     public class MainWindowViewModel : WindowViewModel
     {
@@ -124,7 +124,7 @@ namespace Models_Modifier_by_MainDen.ViewModels
                 Type type = ResultType;
                 foreach (var modifier in modifiers)
                     if (modifier.CanBeAppliedTo(type) && IsMatchesTheSearchQuery(SearchText, modifier.Name))
-                        visibleModifiers.Add(modifier.Modifier);
+                        visibleModifiers.Add(modifier.Clone());
                 return visibleModifiers;
             }
         }

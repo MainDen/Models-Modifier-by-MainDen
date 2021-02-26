@@ -1,7 +1,7 @@
-﻿using Models_Modifier_by_MainDen.Commands;
+﻿using MainDen.ModelsModifier.Commands;
 using System.Windows;
 
-namespace Models_Modifier_by_MainDen.ViewModels
+namespace MainDen.ModelsModifier.ViewModels
 {
     public class WindowViewModel : AbstractViewModel
     {
