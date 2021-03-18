@@ -1,6 +1,7 @@
 ﻿using MainDen.ModifiersCore.Modifiers;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace MainDen.StandardBitmapModifiersPack.Modifiers
 {
@@ -23,18 +24,31 @@ namespace MainDen.StandardBitmapModifiersPack.Modifiers
             double a = result.Width / 2.0;
             double b = result.Height / 2.0;
             EllipseMath math = new EllipseMath(a, b, a, b);
-            for (int i = 0; i < result.Height; i++)
-                for (int j = 0; j < result.Width; j++)
+            unsafe
+            {
+                int w = source.Width;
+                int h = source.Height;
+                int wmax = w - 1;
+                int hmax = h - 1;
+                byte[,,] src = BitmapToByteARGBQ(source);
+                byte[,,] res = new byte[h, w, 4];
+                fixed (byte* _src = src)
+                fixed (byte* _res = res)
                 {
-                    math.SetLocalXInEllipse(j);
-                    math.SetLocalYInEllipse(i);
-                    if (math.ContainsIn())
-                        result.SetPixel(j, i, source.GetPixel(
-                            Math.Max(0, Math.Min(result.Width - 1, (int)math.GetXInBorder())),
-                            Math.Max(0, Math.Min(result.Height - 1, (int)math.GetYInBorder()))
-                            ));
+                    uint* _s = (uint*)_src;
+                    uint* _r = (uint*)_res;
+                    for (int i = 0; i < h; i++)
+                        for (int j = 0; j < w; j++)
+                        {
+                            math.SetLocalXInEllipse(j);
+                            math.SetLocalYInEllipse(i);
+                            if (math.ContainsIn())
+                                *_r = *(_s + Limit(math.GetYInBorder(), 0, hmax) * w + Limit(math.GetXInBorder(), 0, wmax));
+                            _r++;
+                        }
                 }
-            return result;
+                return ByteARGBQToBitmap(res);
+            }
         }
 
         public override bool CanBeAppliedTo(Type modelType)
@@ -45,6 +59,63 @@ namespace MainDen.StandardBitmapModifiersPack.Modifiers
         public override Type ResultType(Type modelType)
         {
             return typeof(Bitmap);
+        }
+
+        private unsafe static byte[,,] BitmapToByteARGBQ(Bitmap bmp)
+        {
+            int width = bmp.Width;
+            int height = bmp.Height;
+            byte[,,] res = new byte[height, width, 4];
+            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            try
+            {
+                uint* curpos = (uint*)bd.Scan0;
+                fixed (byte* _res = res)
+                {
+                    uint* _c = (uint*)_res;
+                    for (int h = 0; h < height; h++)
+                        for (int w = 0; w < width; w++)
+                            *_c++ = *curpos++;
+                }
+            }
+            finally
+            {
+                bmp.UnlockBits(bd);
+            }
+            return res;
+        }
+
+        private unsafe static Bitmap ByteARGBQToBitmap(byte[,,] arr)
+        {
+            int width = arr.GetLength(1);
+            int height = arr.GetLength(0);
+            Bitmap bmp = new Bitmap(width, height);
+            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            try
+            {
+                uint* curpos = (uint*)bd.Scan0;
+                fixed (byte* _arr = arr)
+                {
+                    uint* _c = (uint*)_arr;
+                    for (int h = 0; h < height; h++)
+                        for (int w = 0; w < width; w++)
+                            *curpos++ = *_c++;
+                }
+            }
+            finally
+            {
+                bmp.UnlockBits(bd);
+            }
+            return bmp;
+        }
+
+        private static int Limit(double value, int min, int max)
+        {
+            if (value < min)
+                return min;
+            if (value > max)
+                return max;
+            return (int)value;
         }
 
         private class EllipseMath

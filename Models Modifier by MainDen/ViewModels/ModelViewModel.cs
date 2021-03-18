@@ -34,6 +34,17 @@ namespace MainDen.ModelsModifier.ViewModels
                     C.ToolTip toolTip = new C.ToolTip();
                     toolTip.Content = $"Width: {bitmap.Width}\nHeight: {bitmap.Height}";
                     image.ToolTip = toolTip;
+                    C.ContextMenu contextMenu = new C.ContextMenu();
+                    C.MenuItem saveItem = new C.MenuItem();
+                    saveItem.Header = "Save as";
+                    saveItem.Click += delegate
+                    {
+                        Microsoft.Win32.SaveFileDialog saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+                        if (saveFileDialog.ShowDialog() == true)
+                            bitmap.Save(saveFileDialog.FileName);
+                    };
+                    contextMenu.Items.Add(saveItem);
+                    image.ContextMenu = contextMenu;
                     return image;
                 }
                 return new FrameworkElement();
