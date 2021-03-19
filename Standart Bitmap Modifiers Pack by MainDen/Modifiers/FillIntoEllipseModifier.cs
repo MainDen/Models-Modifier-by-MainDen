@@ -21,15 +21,15 @@ namespace MainDen.StandardBitmapModifiersPack.Modifiers
                 throw new ArgumentException("Invalid model.");
 
             Bitmap result = new Bitmap(source.Width, source.Height);
-            double a = result.Width / 2.0;
-            double b = result.Height / 2.0;
+            int w = source.Width;
+            int h = source.Height;
+            int wmax = w - 1;
+            int hmax = h - 1;
+            double a = wmax / 2.0;
+            double b = hmax / 2.0;
             EllipseMath math = new EllipseMath(a, b, a, b);
             unsafe
             {
-                int w = source.Width;
-                int h = source.Height;
-                int wmax = w - 1;
-                int hmax = h - 1;
                 byte[,,] src = BitmapToByteARGBQ(source);
                 byte[,,] res = new byte[h, w, 4];
                 fixed (byte* _src = src)
@@ -38,6 +38,7 @@ namespace MainDen.StandardBitmapModifiersPack.Modifiers
                     uint* _s = (uint*)_src;
                     uint* _r = (uint*)_res;
                     for (int i = 0; i < h; i++)
+                    {
                         for (int j = 0; j < w; j++)
                         {
                             math.SetLocalXInEllipse(j);
@@ -46,6 +47,7 @@ namespace MainDen.StandardBitmapModifiersPack.Modifiers
                                 *_r = *(_s + Limit(math.GetYInBorder(), 0, hmax) * w + Limit(math.GetXInBorder(), 0, wmax));
                             _r++;
                         }
+                    }
                 }
                 return ByteARGBQToBitmap(res);
             }
@@ -61,52 +63,44 @@ namespace MainDen.StandardBitmapModifiersPack.Modifiers
             return typeof(Bitmap);
         }
 
-        private unsafe static byte[,,] BitmapToByteARGBQ(Bitmap bmp)
+        private unsafe static byte[,,] BitmapToByteARGBQ(Bitmap source)
         {
-            int width = bmp.Width;
-            int height = bmp.Height;
-            byte[,,] res = new byte[height, width, 4];
-            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            int width = source.Width;
+            int height = source.Height;
+            int len = height * width * 4;
+            byte[,,] result = new byte[height, width, 4];
+            BitmapData bd = source.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             try
             {
-                uint* curpos = (uint*)bd.Scan0;
-                fixed (byte* _res = res)
-                {
-                    uint* _c = (uint*)_res;
-                    for (int h = 0; h < height; h++)
-                        for (int w = 0; w < width; w++)
-                            *_c++ = *curpos++;
-                }
+                void* src = (void*)bd.Scan0;
+                fixed (void* dst = result)
+                    Buffer.MemoryCopy(src, dst, len, len);
             }
             finally
             {
-                bmp.UnlockBits(bd);
+                source.UnlockBits(bd);
             }
-            return res;
+            return result;
         }
 
-        private unsafe static Bitmap ByteARGBQToBitmap(byte[,,] arr)
+        private unsafe static Bitmap ByteARGBQToBitmap(byte[,,] source)
         {
-            int width = arr.GetLength(1);
-            int height = arr.GetLength(0);
-            Bitmap bmp = new Bitmap(width, height);
-            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            int width = source.GetLength(1);
+            int height = source.GetLength(0);
+            int len = height * width * 4;
+            Bitmap result = new Bitmap(width, height);
+            BitmapData bd = result.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             try
             {
-                uint* curpos = (uint*)bd.Scan0;
-                fixed (byte* _arr = arr)
-                {
-                    uint* _c = (uint*)_arr;
-                    for (int h = 0; h < height; h++)
-                        for (int w = 0; w < width; w++)
-                            *curpos++ = *_c++;
-                }
+                void* dst = (void*)bd.Scan0;
+                fixed (void* src = source)
+                    Buffer.MemoryCopy(src, dst, len, len);
             }
             finally
             {
-                bmp.UnlockBits(bd);
+                result.UnlockBits(bd);
             }
-            return bmp;
+            return result;
         }
 
         private static int Limit(double value, int min, int max)
